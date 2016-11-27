@@ -1,2 +1,5 @@
 # Tardis_GIT
-TARDIS Repository
+
+## DTMF
+Uses MC8880C 20-pin DIP
+
