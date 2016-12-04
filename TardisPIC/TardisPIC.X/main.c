@@ -82,7 +82,12 @@ void DTMF_Tx_Tone(int tone)
 {
 	Set_DTMF_bus_mode(OUTPUT);
 	Set_DTMF_RS0(0);
-	Set_DTMF_bus(tone);
+//	Set_DTMF_bus(tone);
+	BitWrPortI(LATA, 1, 0);
+	BitWrPortI(LATA, 0, 1);
+	BitWrPortI(LATA, 0, 2);
+	BitWrPortI(LATA, 0, 3);
+
 	Set_DTMF_WR(0);
 	__delay_ms(1);
 	Set_DTMF_WR(1);
