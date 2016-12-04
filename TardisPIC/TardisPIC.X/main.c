@@ -23,31 +23,72 @@
 #define ON 0xFF
 #define OFF 0x00
 
-#define TEST_DELAY 10
+#define OUTPUT 1
+#define INPUT 0
 
-void io_write(unsigned int mask, unsigned int on_off_mask);
-void knight_rider(void);
+#define TEST_DELAY 5
 
-void main(void)
+#define DEBUG 1
+#define RUN 1
+
+void ConfigSystem(void);
+
+void BitWrPortI(int port, int value,int bitcode)
 {
-    /* initialize */	
-    PORTA = 0x00;
-    LATA = 0x00;
-    ADCON1 = 0x7F;
-    TRISA = 0xD0;
-	
-	knight_rider();
-    while(1){;}
-    return;
+    LATA = value << bitcode;
 }
 
-void io_write(unsigned int mask, unsigned int on_off_mask)
+int BitRdPortA(int r)
 {
-	TRISA = mask ^ on_off_mask;
-    PORTA = mask;
+	return PORTA << r;
 }
 
-#if 1
+void Set_DTMF_bus_mode(int mode) /* configure d0-d3 as IN or OUT */
+{
+	BitWrPortI(TRISA, mode, 0);
+	BitWrPortI(TRISA, mode, 1);
+	BitWrPortI(TRISA, mode, 2);
+	BitWrPortI(TRISA, mode, 3);
+}
+void Set_DTMF_bus(int r)
+{
+	BitWrPortI(LATA, (r & 0x01) >> 0, 0); /* Set RA0 */
+	BitWrPortI(LATA, (r & 0x02) >> 1, 1); /* Set RA1 */
+	BitWrPortI(LATA, (r & 0x04) >> 2, 2); /* Set RA2 */
+	BitWrPortI(LATA, (r & 0x08) >> 3, 3); /* Set RA3 */
+}
+
+void Set_DTMF_CS(int r)
+{
+	BitWrPortI(PORTB, r, 2);
+}
+
+void Set_DTMF_WR(int r)
+{
+	BitWrPortI(PORTB, r, 3);
+}
+
+void Set_DTMF_RD(int r)
+{
+	BitWrPortI(PORTB, r, 3);
+}
+
+void Set_DTMF_RS0(int r)
+{
+	BitWrPortI(PORTB, r, 1);
+}
+
+void DTMF_Tx_Tone(int tone)
+{
+	Set_DTMF_bus_mode(OUTPUT);
+	Set_DTMF_RS0(0);
+	Set_DTMF_bus(tone);
+	Set_DTMF_WR(0);
+	__delay_ms(1);
+	Set_DTMF_WR(1);
+	Set_DTMF_bus_mode(INPUT);
+}
+
 void knight_rider(void)
 {
 	int i, n, c;
@@ -56,19 +97,18 @@ void knight_rider(void)
 	loop_count = 0;
 	c = 0;
 	for(i = 0; i<= 15 && loop_count < 15; i++){
-		io_write(i, ON);
+		BitWrPortI(PORTA, i, ON);
 		__delay_ms(TEST_DELAY);
-		io_write(i, OFF);
+		BitWrPortI(PORTA, i, OFF);
 		__delay_ms(TEST_DELAY);
 		
 		if(i == 7){
 			for(n = 6; n <= 0; n--){
-				io_write(n, ON);
+				BitWrPortI(PORTA, n, ON);
 				__delay_ms(TEST_DELAY);
-				io_write(n, OFF);
+				BitWrPortI(PORTA, n, OFF);
 				__delay_ms(TEST_DELAY);
 			}
-			
 			if(n == -1){
 				i = 1;
 				loop_count++;
@@ -76,4 +116,79 @@ void knight_rider(void)
 		}
 	}
 }
-#endif
+
+void main(void)
+{
+	BitWrPortI(TRISA, 0, 0xF0);
+	BitWrPortI(TRISB, 0, 0xF0);
+	
+	knight_rider(); /* Test ports */
+	
+	/* Reset DTMF Chip */
+	
+	Set_DTMF_bus_mode(INPUT);
+	Set_DTMF_CS(0);
+	Set_DTMF_RS0(1);
+	Set_DTMF_RD(1);
+	Set_DTMF_WR(1);
+	Set_DTMF_bus_mode(OUTPUT);
+	Set_DTMF_bus(0x00);
+	__delay_ms(1);
+	Set_DTMF_WR(0);
+	__delay_ms(1);
+	Set_DTMF_WR(1);
+	Set_DTMF_bus(0x08);
+	__delay_ms(1);
+	Set_DTMF_WR(0);
+	__delay_ms(1);
+	Set_DTMF_WR(1);
+	Set_DTMF_bus(0x00);
+	__delay_ms(1);
+	Set_DTMF_WR(0);
+	__delay_ms(1);
+	Set_DTMF_WR(1);
+
+
+	Set_DTMF_bus_mode(INPUT);
+	Set_DTMF_RD(0);  /* Read from the chip to clear flags */
+	__delay_ms(1);
+	Set_DTMF_RD(1);
+
+	/*** Now we configure the DTMF tx mode *///
+	Set_DTMF_bus_mode(OUTPUT);
+	Set_DTMF_bus(0x0D);
+	__delay_ms(1);
+	Set_DTMF_WR(0);
+	__delay_ms(1);
+	Set_DTMF_WR(1);
+	Set_DTMF_bus(0x00);
+	__delay_ms(1);
+	Set_DTMF_WR(0);
+	__delay_ms(1);
+	Set_DTMF_WR(1);
+	Set_DTMF_bus_mode(INPUT);
+	/* End of reset */
+	
+    while(1){
+		DTMF_Tx_Tone(1);
+		__delay_ms(1000);
+		DTMF_Tx_Tone(2);
+		__delay_ms(1000);
+		DTMF_Tx_Tone(3);
+		__delay_ms(1000);
+		DTMF_Tx_Tone(4);
+		__delay_ms(1000);
+	}
+    return;
+}
+
+void ConfigSystem(void)
+{
+	WDTCONbits.SWDTEN = 0;
+	
+	/* initialize PORTA */	
+    PORTA = 0x00;
+    LATA = 0x00;
+    ADCON1 = 0x7F;
+    TRISA = 0xD0;
+}
