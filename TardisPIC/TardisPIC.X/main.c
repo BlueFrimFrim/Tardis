@@ -82,11 +82,11 @@ void DTMF_Tx_Tone(int tone)
 {
 	Set_DTMF_bus_mode(OUTPUT);
 	Set_DTMF_RS0(0);
-//	Set_DTMF_bus(tone);
-	BitWrPortI(LATA, 1, 0);
-	BitWrPortI(LATA, 0, 1);
-	BitWrPortI(LATA, 0, 2);
-	BitWrPortI(LATA, 0, 3);
+	Set_DTMF_bus(tone);
+//	BitWrPortI(LATA, 1, 0);
+//	BitWrPortI(LATA, 0, 1);
+//	BitWrPortI(LATA, 0, 2);
+//	BitWrPortI(LATA, 0, 3);
 
 	Set_DTMF_WR(0);
 	__delay_ms(1);
@@ -190,7 +190,7 @@ void main(void)
 void ConfigSystem(void)
 {
 	WDTCONbits.SWDTEN = 0;
-	
+	INTCON2bits.RBPU = 0;
 	/* initialize PORTA */	
     PORTA = 0x00;
     LATA = 0x00;
