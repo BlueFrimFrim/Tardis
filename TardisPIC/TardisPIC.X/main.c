@@ -29,13 +29,12 @@
 #define TEST_DELAY 5
 
 #define DEBUG 1
-#define RUN 1
 
 void ConfigSystem(void);
 
 void BitWrPortI(int port, int value,int bitcode)
 {
-    LATA = value << bitcode;
+    port = value << bitcode;
 }
 
 int BitRdPortA(int r)
@@ -123,14 +122,24 @@ void knight_rider(void)
 }
 
 void main(void)
-{
+{	
+#if 0
 	BitWrPortI(TRISA, 0, 0xF0);
 	BitWrPortI(TRISB, 0, 0xF0);
+
+	BitWrPortI(LATB, 1, 3);
+	BitWrPortI(PORTA, 0, 1);
+#endif
+	TRISAbits.RA0 = 0;
+	PORTAbits.RA0 = 1;
 	
+	TRISBbits.RB3 = 0;
+	PORTBbits.RB3 = 1;
+	
+#ifdef RUN	
 	knight_rider(); /* Test ports */
 	
 	/* Reset DTMF Chip */
-	
 	Set_DTMF_bus_mode(INPUT);
 	Set_DTMF_CS(0);
 	Set_DTMF_RS0(1);
@@ -185,6 +194,7 @@ void main(void)
 		__delay_ms(1000);
 	}
     return;
+#endif /* RUN */
 }
 
 void ConfigSystem(void)
