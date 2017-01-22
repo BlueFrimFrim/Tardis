@@ -41,22 +41,26 @@ byte bus_read(void);
 const byte WRITE = 0;
 const byte READ = 1;
 
+byte tone_test[] = {one, two, three, four, five, six, seven, eight, nine,
+                    zero, star, hash};
+
 void setup(void)
 {
+  reset();
 	bus_mode(WRITE);
 	pinMode(SW, INPUT);
 	pinMode(IRQ_NOT, INPUT);
 	pinMode(RS0, OUTPUT);
 	pinMode(CS_NOT, OUTPUT);
 	pinMode(RW, OUTPUT);
-	reset();
 
 	Serial.begin(115200);
 }
 
 void loop(void)
 {
-
+  play_tone(tone_test, sizeof(tone_test));
+  delay(1000);
 }
 
 void reset(void)
@@ -85,6 +89,7 @@ byte status_register_read(void)
 void transmit_register_write(byte value)
 {
 	bus_write(value);
+ // delay(5);
 	digitalWrite(RS0, LOW);
 	digitalWrite(RW, LOW);
 	digitalWrite(CS_NOT, LOW);
@@ -144,14 +149,16 @@ void bus_write(byte value)
 	return;
 }
 
-void play_tone(byte value, int len)
+#define TEST
+
+void play_tone(byte *value, int len)
 {
 	control_register_write(B1101);
 	control_register_write(B0000);
 	for(int i = 0; i < len; i++){
-		transmit_register_write(value);
-		delay(1000);
-		while(digitalRead(IRQ_NOT) == HIGH){
+		transmit_register_write(value[i]);
+		delay(175);
+	while(digitalRead(IRQ_NOT) == HIGH){
 			delay (1);
 		}
 	}
