@@ -57,7 +57,7 @@ byte tone_received = 0;
 unsigned long interrupt_time = 0;
 unsigned long last_interrupt = 0;
 
-#ifdef REGENERATE_TONE
+#if 0
 void setup(void)
 {
   reset();
@@ -78,24 +78,32 @@ void loop(void)
 }
 #endif /* REGENERATE_TONE */
 
-#ifdef RECEIVE_TONE
+#if 1
+
+void test(void)
+{
+  Serial.println("test");
+  status_register_read(); 
+}
+
 void setup(void)
 {
-  reset();
+  Serial.begin(115200);
+  Serial.println();
   bus_mode(WRITE);
-  pinMode(SW, INPUT);
   pinMode(IRQ_NOT, INPUT);
   pinMode(RS0, OUTPUT);
   pinMode(CS_NOT, OUTPUT);
   pinMode(RW, OUTPUT);
-  attachInterrupt(digitalPinToInterrupt(IRQ_NOT), print_received, CHANGE);
-  Serial.begin(115200);
-  Serial.println("Begin transmission...");
+  reset();
+  Serial.print(F("Begin transmission...\r\n"));
+  attachInterrupt(digitalPinToInterrupt(IRQ_NOT), print_received, CHANGE); /* READ STATUS REGISTER TO CLEAR INTERRUPT */
+  delay(5000);
 }
 
 void loop(void)
 {
-  read_receive_register();
+  //read_receive_register();
 }
 #endif /* RECEIVE_TONE */
 
@@ -104,7 +112,7 @@ void reset(void)
 	delay(100);
 	control_register_write(B0000);
 	control_register_write(B0000);
-	control_register_write(B1000);
+	control_register_write(B1100);
 	control_register_write(B0000);
 	status_register_read();
 }
@@ -125,7 +133,6 @@ byte status_register_read(void)
 void transmit_register_write(byte value)
 {
 	bus_write(value);
- // delay(5);
 	digitalWrite(RS0, LOW);
 	digitalWrite(RW, LOW);
 	digitalWrite(CS_NOT, LOW);
@@ -137,9 +144,9 @@ void transmit_register_write(byte value)
 void control_register_write(byte value)
 {
 	bus_write(value);
+  digitalWrite(CS_NOT, LOW);
 	digitalWrite(RS0, HIGH);
 	digitalWrite(RW, LOW);
-	digitalWrite(CS_NOT, LOW);
 	digitalWrite(CS_NOT, HIGH);
 
 	return;
@@ -201,6 +208,9 @@ void print_received(void)
   interrupt_time = millis();
   if(interrupt_time - last_interrupt > 250)
   {
+    read_receive_register();
+    Serial.println(tone_received);
+    /*
     switch(tone_received){
       case 1:
         Serial.println("1");
@@ -226,27 +236,37 @@ void print_received(void)
       case 8:
         Serial.println("8");
         break;
-      case 3:
-        Serial.println("3");
+      case 9:
+        Serial.println("9");
         break;
-      case 4:
-        Serial.println("4");
+      case 10:
+        Serial.println("0");
         break;
-      case 5:
-        Serial.println("5");
+      case 11:
+        Serial.println("*");
         break;
-      case 6:
-        Serial.println("6");
-        break;        
-      case default:
+      case 12:
+        Serial.println("#");
+        break;    
+      case 13:
+        Serial.println("A");
+        break;
+      case 14:
+        Serial.println("B");
+        break;
+      case 15:
+        Serial.println("C");
+        break;
+      case 0:
+        Serial.println("D");
+        break;              
+      default:
         break;
     }
-    Serial.println("interrupt...");
-    Serial.print("Tone Received: ");
-    Serial.println(tone_received);
-    Serial.println("...end of interrupt");
+    */
     last_interrupt = interrupt_time;
   }
+  status_register_read();
 }
 
 void play_tone(byte *value, int len)
