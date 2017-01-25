@@ -1,5 +1,7 @@
 #include "Arduino.h"
 
+#define RECEIVE_TONE
+
 static const byte one = 1;
 static const byte two = 2;
 static const byte three = 3;
@@ -21,7 +23,7 @@ const byte D0 = 3;
 const byte D1 = 4;
 const byte D2 = 5;
 const byte D3 = 6;
-const byte IRQ_NOT = 7;
+const byte IRQ_NOT = 2;
 const byte RS0 = 8;
 const byte RW = 9;
 const byte CS_NOT = 10;
@@ -30,10 +32,12 @@ const byte SW = 12;
 
 void reset(void);
 byte status_register_read(void);
+byte read_receive_register(void);
 void transmit_register_write(byte value);
 void control_register_write(byte value);
 void bus_mode(byte mode);
 void bus_write(byte value);
+void print_received(void);
 void play_tone(byte value, int length);
 
 byte bus_read(void);
@@ -41,9 +45,19 @@ byte bus_read(void);
 const byte WRITE = 0;
 const byte READ = 1;
 
+byte status_register = 0;
+
+int interrupt = 0;
+
 byte tone_test[] = {one, two, three, four, five, six, seven, eight, nine,
                     zero, star, hash};
 
+byte tone_received = 0;
+
+unsigned long interrupt_time = 0;
+unsigned long last_interrupt = 0;
+
+#ifdef REGENERATE_TONE
 void setup(void)
 {
   reset();
@@ -62,6 +76,28 @@ void loop(void)
   play_tone(tone_test, sizeof(tone_test));
   delay(1000);
 }
+#endif /* REGENERATE_TONE */
+
+#ifdef RECEIVE_TONE
+void setup(void)
+{
+  reset();
+  bus_mode(WRITE);
+  pinMode(SW, INPUT);
+  pinMode(IRQ_NOT, INPUT);
+  pinMode(RS0, OUTPUT);
+  pinMode(CS_NOT, OUTPUT);
+  pinMode(RW, OUTPUT);
+  attachInterrupt(digitalPinToInterrupt(IRQ_NOT), print_received, CHANGE);
+  Serial.begin(115200);
+  Serial.println("Begin transmission...");
+}
+
+void loop(void)
+{
+  read_receive_register();
+}
+#endif /* RECEIVE_TONE */
 
 void reset(void)
 {
@@ -83,7 +119,7 @@ byte status_register_read(void)
 	value = bus_read();
 	digitalWrite(CS_NOT, HIGH);
 
-	return value;
+ return value;
 }
 
 void transmit_register_write(byte value)
@@ -149,18 +185,77 @@ void bus_write(byte value)
 	return;
 }
 
-#define TEST
+byte read_receive_register(void)
+{
+  bus_mode(READ);
+  digitalWrite(RW, HIGH);
+  digitalWrite(RS0, LOW);
+  digitalWrite(CS_NOT, LOW);
+  tone_received = bus_read();
+
+  return tone_received;
+}
+
+void print_received(void)
+{
+  interrupt_time = millis();
+  if(interrupt_time - last_interrupt > 250)
+  {
+    switch(tone_received){
+      case 1:
+        Serial.println("1");
+        break;
+      case 2:
+        Serial.println("2");
+        break;
+      case 3:
+        Serial.println("3");
+        break;
+      case 4:
+        Serial.println("4");
+        break;
+      case 5:
+        Serial.println("5");
+        break;
+      case 6:
+        Serial.println("6");
+        break;
+      case 7:
+        Serial.println("7");
+        break;
+      case 8:
+        Serial.println("8");
+        break;
+      case 3:
+        Serial.println("3");
+        break;
+      case 4:
+        Serial.println("4");
+        break;
+      case 5:
+        Serial.println("5");
+        break;
+      case 6:
+        Serial.println("6");
+        break;        
+      case default:
+        break;
+    }
+    Serial.println("interrupt...");
+    Serial.print("Tone Received: ");
+    Serial.println(tone_received);
+    Serial.println("...end of interrupt");
+    last_interrupt = interrupt_time;
+  }
+}
 
 void play_tone(byte *value, int len)
 {
-	control_register_write(B1101);
+	control_register_write(B1011);
 	control_register_write(B0000);
 	for(int i = 0; i < len; i++){
 		transmit_register_write(value[i]);
-		delay(175);
-	while(digitalRead(IRQ_NOT) == HIGH){
-			delay (1);
-		}
+		delay(1000);
 	}
 }
 
