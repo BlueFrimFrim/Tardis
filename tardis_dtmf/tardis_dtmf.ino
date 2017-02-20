@@ -1,6 +1,5 @@
 #include "Arduino.h"
-
-#define RECEIVE_TONE
+#include <Wire.h>
 
 static const byte one = 1;
 static const byte two = 2;
@@ -40,6 +39,8 @@ void bus_write(byte value);
 void print_received(void);
 void play_tone(byte value, int length);
 
+void simulate(void);
+
 byte bus_read(void);
 
 const byte WRITE = 0;
@@ -48,16 +49,22 @@ const byte READ = 1;
 byte status_register = 0;
 
 int interrupt = 0;
+int interrupt2 = 0;
 
-byte tone_test[] = {one, two, three, four, five, six, seven, eight, nine,
-                    zero, star, hash};
+byte tone_test[] = {star, one, two, three, four, hash};
+byte tone_clear[] = {0};
 
 byte tone_received = 0;
 
 unsigned long interrupt_time = 0;
 unsigned long last_interrupt = 0;
 
-#if 0
+unsigned long interrupt_time2 = 0;
+unsigned long last_interrupt2 = 0;
+
+int timer = 0;
+
+#if 0 /* REGENERATE_TONE */
 void setup(void)
 {
   reset();
@@ -68,17 +75,21 @@ void setup(void)
 	pinMode(CS_NOT, OUTPUT);
 	pinMode(RW, OUTPUT);
 
-	Serial.begin(115200);
+  attachInterrupt(digitalPinToInterrupt(IRQ_NOT), simulate, CHANGE); /* READ STATUS REGISTER TO CLEAR INTERRUPT */
+  delay(1500);
 }
 
 void loop(void)
 {
-  play_tone(tone_test, sizeof(tone_test));
-  delay(1000);
+  if(interrupt == 1){
+    play_tone(tone_test, sizeof(tone_test));
+    interrupt = 0;
+    play_tone(tone_clear, sizeof(tone_clear));
+  }
 }
 #endif /* REGENERATE_TONE */
 
-#if 1
+#if 1 /* RECEIVE_TONE (i2c Master) */
 
 void test(void)
 {
@@ -88,24 +99,35 @@ void test(void)
 
 void setup(void)
 {
-  Serial.begin(115200);
-  Serial.println();
+  Serial.begin(9600);
   bus_mode(WRITE);
   pinMode(IRQ_NOT, INPUT);
   pinMode(RS0, OUTPUT);
   pinMode(CS_NOT, OUTPUT);
   pinMode(RW, OUTPUT);
   reset();
+  while(!Serial);
   Serial.print(F("Begin transmission...\r\n"));
-  attachInterrupt(digitalPinToInterrupt(IRQ_NOT), print_received, CHANGE); /* READ STATUS REGISTER TO CLEAR INTERRUPT */
-  delay(5000);
+ // attachInterrupt(digitalPinToInterrupt(IRQ_NOT), print_received, CHANGE); /* READ STATUS REGISTER TO CLEAR INTERRUPT */
+  delay(100);
+
+  Wire.begin(); /* i2c communication */
 }
 
 void loop(void)
 {
-  //read_receive_register();
+  Wire.beginTransmission(7);
+  Serial.println(F("Begin transmission (7)"));
+  delay(1);
+  Serial.println(F("Printing..."));
+  Wire.write(tone_received);
+  Serial.println(F("Print completed"));
+  delay(1);
+  Wire.endTransmission();
+  Serial.println(F("Transmission ended"));
+  delay(1000);
 }
-#endif /* RECEIVE_TONE */
+#endif /* RECEIVE_TONE (i2c Master) */
 
 void reset(void)
 {
@@ -205,68 +227,23 @@ byte read_receive_register(void)
 
 void print_received(void)
 {
-  interrupt_time = millis();
-  if(interrupt_time - last_interrupt > 250)
-  {
-    read_receive_register();
-    Serial.println(tone_received);
-    /*
-    switch(tone_received){
-      case 1:
-        Serial.println("1");
-        break;
-      case 2:
-        Serial.println("2");
-        break;
-      case 3:
-        Serial.println("3");
-        break;
-      case 4:
-        Serial.println("4");
-        break;
-      case 5:
-        Serial.println("5");
-        break;
-      case 6:
-        Serial.println("6");
-        break;
-      case 7:
-        Serial.println("7");
-        break;
-      case 8:
-        Serial.println("8");
-        break;
-      case 9:
-        Serial.println("9");
-        break;
-      case 10:
-        Serial.println("0");
-        break;
-      case 11:
-        Serial.println("*");
-        break;
-      case 12:
-        Serial.println("#");
-        break;    
-      case 13:
-        Serial.println("A");
-        break;
-      case 14:
-        Serial.println("B");
-        break;
-      case 15:
-        Serial.println("C");
-        break;
-      case 0:
-        Serial.println("D");
-        break;              
-      default:
-        break;
+    interrupt_time = millis();
+    if(interrupt_time - last_interrupt > 100)
+    {
+      read_receive_register();
+      Wire.beginTransmission(7);
+      Serial.println(F("Begin transmission (7)"));
+      delay(1);
+      Serial.println(F("Printing..."));
+      Wire.write(tone_received);
+      Serial.println(F("Print completed"));
+      delay(1);
+      Wire.endTransmission();
+      Serial.println(F("Transmission ended"));
+  
+      last_interrupt = interrupt_time;
     }
-    */
-    last_interrupt = interrupt_time;
-  }
-  status_register_read();
+    status_register_read();
 }
 
 void play_tone(byte *value, int len)
@@ -275,8 +252,18 @@ void play_tone(byte *value, int len)
 	control_register_write(B0000);
 	for(int i = 0; i < len; i++){
 		transmit_register_write(value[i]);
-		delay(1000);
+		delay(500);
 	}
+}
+
+void simulate(void)
+{
+  interrupt_time2 = millis();
+  if(interrupt_time2 - last_interrupt2 > 250)
+  {
+    interrupt = 1;
+    last_interrupt2 = interrupt_time2;
+  }
 }
 
 
