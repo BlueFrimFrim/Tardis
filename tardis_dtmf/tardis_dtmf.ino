@@ -64,6 +64,13 @@ unsigned long last_interrupt2 = 0;
 
 int timer = 0;
 
+/* 
+ *  
+ *  
+ *  TONE GENERATION 
+ *
+ *
+ */
 #if 0 /* REGENERATE_TONE */
 void setup(void)
 {
@@ -96,7 +103,13 @@ void test(void)
   Serial.println("test");
   status_register_read(); 
 }
-
+/* 
+ *  
+ *  
+ *  TONE DETECTION 
+ *
+ *
+ */
 void setup(void)
 {
   Serial.begin(9600);
@@ -108,7 +121,7 @@ void setup(void)
   reset();
   while(!Serial);
   Serial.print(F("Begin transmission...\r\n"));
- // attachInterrupt(digitalPinToInterrupt(IRQ_NOT), print_received, CHANGE); /* READ STATUS REGISTER TO CLEAR INTERRUPT */
+  attachInterrupt(digitalPinToInterrupt(IRQ_NOT), print_received, CHANGE); /* READ STATUS REGISTER TO CLEAR INTERRUPT */
   delay(100);
 
   Wire.begin(); /* i2c communication */
@@ -231,17 +244,8 @@ void print_received(void)
     if(interrupt_time - last_interrupt > 100)
     {
       read_receive_register();
-      Wire.beginTransmission(7);
-      Serial.println(F("Begin transmission (7)"));
-      delay(1);
-      Serial.println(F("Printing..."));
-      Wire.write(tone_received);
-      Serial.println(F("Print completed"));
-      delay(1);
-      Wire.endTransmission();
-      Serial.println(F("Transmission ended"));
-  
       last_interrupt = interrupt_time;
+    
     }
     status_register_read();
 }
