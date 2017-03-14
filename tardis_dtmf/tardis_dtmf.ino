@@ -39,6 +39,8 @@ void bus_write(byte value);
 void print_received(void);
 void play_tone(byte value, int length);
 
+unsigned concatenate(unsigned x, unsigned y);
+
 void simulate(void);
 
 byte bus_read(void);
@@ -55,6 +57,9 @@ byte tone_test[] = {star, one, two, three, four, hash};
 byte tone_clear[] = {0};
 
 byte tone_received = 0;
+byte tones_rx[7] = {0};
+int tone_position = 0;
+char train_code = 0;
 
 unsigned long interrupt_time = 0;
 unsigned long last_interrupt = 0;
@@ -112,6 +117,7 @@ void test(void)
  */
 void setup(void)
 {
+  memset(tones_rx, 0, sizeof(tones_rx));
   Serial.begin(9600);
   bus_mode(WRITE);
   pinMode(IRQ_NOT, INPUT);
@@ -129,16 +135,21 @@ void setup(void)
 
 void loop(void)
 {
-  Wire.beginTransmission(7);
-  Serial.println(F("Begin transmission (7)"));
-  delay(1);
-  Serial.println(F("Printing..."));
-  Wire.write(tone_received);
-  Serial.println(F("Print completed"));
-  delay(1);
-  Wire.endTransmission();
-  Serial.println(F("Transmission ended"));
-  delay(1000);
+  int value = 0;
+  Serial.println("No detection...");
+  delay(500);
+  if(interrupt){
+    interrupt = 0;
+    for(int i = 0; i<6; i++){
+      value = concatenate(tones_rx[i], tones_rx[i+1]);
+
+    }
+    Serial.print("tones_rx: ");
+    Serial.println(value);
+    if(tones_rx[6] == hash){
+
+    }
+  }
 }
 #endif /* RECEIVE_TONE (i2c Master) */
 
@@ -241,13 +252,19 @@ byte read_receive_register(void)
 void print_received(void)
 {
     interrupt_time = millis();
-    if(interrupt_time - last_interrupt > 100)
-    {
+    if(interrupt_time - last_interrupt > 100){
+      Serial.println("Interrupt...");
+      interrupt = 1;
       read_receive_register();
+      if(tone_received == star){
+        tone_position = 0;
+      }
+      tones_rx[tone_position] = tone_received;
+      tone_position++;
+      if(tone_position == 7){tone_position = 0;}
       last_interrupt = interrupt_time;
-    
+      status_register_read();
     }
-    status_register_read();
 }
 
 void play_tone(byte *value, int len)
@@ -270,7 +287,18 @@ void simulate(void)
   }
 }
 
-
+/*
+ * concatenate(unsigned x, unsigned y)
+ *
+ * 1) get number of digits: digits = log10(y)+1
+ * 2) shift: shifted = x * pow(10, digits)
+ * 3) add second variable: z = shifted + y
+ *
+ */
+unsigned concatenate(unsigned x, unsigned y)
+{
+  return x * pow(10, (int)log10(y)+1) + y;
+}
 
 
 
