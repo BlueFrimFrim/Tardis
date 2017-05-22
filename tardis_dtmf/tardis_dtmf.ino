@@ -53,13 +53,14 @@ byte status_register = 0;
 int interrupt = 0;
 int interrupt2 = 0;
 
-byte tone_test[] = {star, one, two, three, four, hash};
+byte tone_test[] = {star, one, two, three, hash};
 byte tone_clear[] = {0};
 
 byte tone_received = 0;
-byte tones_rx[7] = {0};
-int tone_position = 0;
+
 char train_code = 0;
+
+volatile long int gcommand = 0;
 
 unsigned long interrupt_time = 0;
 unsigned long last_interrupt = 0;
@@ -117,7 +118,6 @@ void test(void)
  */
 void setup(void)
 {
-  memset(tones_rx, 0, sizeof(tones_rx));
   Serial.begin(9600);
   bus_mode(WRITE);
   pinMode(IRQ_NOT, INPUT);
@@ -135,20 +135,11 @@ void setup(void)
 
 void loop(void)
 {
-  int value = 0;
-  Serial.println("No detection...");
-  delay(500);
   if(interrupt){
     interrupt = 0;
-    for(int i = 0; i<6; i++){
-      value = concatenate(tones_rx[i], tones_rx[i+1]);
-
-    }
-    Serial.print("tones_rx: ");
-    Serial.println(value);
-    if(tones_rx[6] == hash){
-
-    }
+    process_data(tone_received);
+    Serial.print("Tardis:~ Detected$ ");
+    Serial.println(tone_received);
   }
 }
 #endif /* RECEIVE_TONE (i2c Master) */
@@ -256,12 +247,6 @@ void print_received(void)
       Serial.println("Interrupt...");
       interrupt = 1;
       read_receive_register();
-      if(tone_received == star){
-        tone_position = 0;
-      }
-      tones_rx[tone_position] = tone_received;
-      tone_position++;
-      if(tone_position == 7){tone_position = 0;}
       last_interrupt = interrupt_time;
       status_register_read();
     }
@@ -284,6 +269,52 @@ void simulate(void)
   {
     interrupt = 1;
     last_interrupt2 = interrupt_time2;
+  }
+}
+
+void process_data(long int input)
+{
+  Serial.println(F("Tardis:~ Debug$ process_data running"));
+  Serial.print(F("Tardis:~ Debug$ input = "));
+  Serial.println(input);
+  
+  if(input == 12){
+    Serial.print(F("Tardis:~ Debug$ # found! gcommand = "));
+    Serial.println(gcommand);
+    execute_command(gcommand);
+  }
+  if(input == 11){
+    Serial.print(F("Tardis:~ Debug$ * found! gcommand = "));
+    Serial.println(gcommand);
+    gcommand = input;
+  }
+  else{
+    Serial.print(F("Tardis:~ Concatenate$ gcommand: "));
+    Serial.print(gcommand);  
+    Serial.print(F("  input: "));
+    Serial.println(input);
+    gcommand = concatenate(gcommand, input);
+    Serial.print(F("Tardis:~ Concatenate$ Result: "));
+    Serial.println(gcommand);
+  }
+}
+
+void execute_command(long int command)
+{
+  switch (command){
+    case 11123:
+      Wire.beginTransmission(7); // transmit to device #8
+      Wire.write(0x07);              // sends one byte
+      Wire.endTransmission();
+      delay(100);
+    break;
+
+    default:
+      Wire.beginTransmission(7); // transmit to device #8
+      Wire.write(0xff);              // sends one byte
+      Wire.endTransmission();
+      delay(100);
+    break;
   }
 }
 
