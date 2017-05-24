@@ -116,20 +116,17 @@ void test(void)
  *
  *
  */
+
+void initializeDTMF_Receive(void);
+int seconds(int sec);
+
 void setup(void)
 {
   Serial.begin(9600);
-  bus_mode(WRITE);
-  pinMode(IRQ_NOT, INPUT);
-  pinMode(RS0, OUTPUT);
-  pinMode(CS_NOT, OUTPUT);
-  pinMode(RW, OUTPUT);
-  reset();
   while(!Serial);
-  Serial.print(F("Begin transmission...\r\n"));
   attachInterrupt(digitalPinToInterrupt(IRQ_NOT), print_received, CHANGE); /* READ STATUS REGISTER TO CLEAR INTERRUPT */
+  initializeDTMF_Receive();
   delay(100);
-
   Wire.begin(); /* i2c communication */
 }
 
@@ -143,6 +140,32 @@ void loop(void)
   }
 }
 #endif /* RECEIVE_TONE (i2c Master) */
+
+//--------------------------------------------------------------------------
+// 2017-05-23 Newer functions.
+void
+initializeDTMF_Receive(void)
+{
+  bus_mode(WRITE);
+  pinMode(IRQ_NOT, INPUT);
+  pinMode(RS0, OUTPUT);
+  pinMode(CS_NOT, OUTPUT);
+  pinMode(RW, OUTPUT);
+  reset();
+  return;
+}
+
+//---------------------------------
+// timeout: time in seconds
+void timeout(int time)
+{
+  static unsigned long prev_time = 0;
+  unsigned long current_time = second();
+
+  if()
+}
+
+// End of changes.
 
 void reset(void)
 {
