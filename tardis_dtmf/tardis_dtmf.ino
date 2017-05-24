@@ -1,5 +1,4 @@
-#include "Arduino.h"
-#include <Wire.h>
+#include "tardis.h"
 
 static const byte one = 1;
 static const byte two = 2;
@@ -18,45 +17,16 @@ static const byte B = 14;
 static const byte C = 15;
 static const byte D = 0;
 
-const byte D0 = 3;
-const byte D1 = 4;
-const byte D2 = 5;
-const byte D3 = 6;
-const byte IRQ_NOT = 2;
-const byte RS0 = 8;
-const byte RW = 9;
-const byte CS_NOT = 10;
-const byte DHT_IN = 11;
-const byte SW = 12;
+byte gtone_received = 0;
 
-void reset(void);
-byte status_register_read(void);
-byte read_receive_register(void);
-void transmit_register_write(byte value);
-void control_register_write(byte value);
-void bus_mode(byte mode);
-void bus_write(byte value);
 void print_received(void);
-void play_tone(byte value, int length);
-
 unsigned concatenate(unsigned x, unsigned y);
-
-void simulate(void);
-
-byte bus_read(void);
-
-const byte WRITE = 0;
-const byte READ = 1;
-
-byte status_register = 0;
 
 int interrupt = 0;
 int interrupt2 = 0;
 
 byte tone_test[] = {star, one, two, three, hash};
 byte tone_clear[] = {0};
-
-byte tone_received = 0;
 
 char train_code = 0;
 
@@ -73,59 +43,23 @@ int timer = 0;
 /* 
  *  
  *  
- *  TONE GENERATION 
- *
- *
- */
-#if 0 /* REGENERATE_TONE */
-void setup(void)
-{
-  reset();
-	bus_mode(WRITE);
-	pinMode(SW, INPUT);
-	pinMode(IRQ_NOT, INPUT);
-	pinMode(RS0, OUTPUT);
-	pinMode(CS_NOT, OUTPUT);
-	pinMode(RW, OUTPUT);
-
-  attachInterrupt(digitalPinToInterrupt(IRQ_NOT), simulate, CHANGE); /* READ STATUS REGISTER TO CLEAR INTERRUPT */
-  delay(1500);
-}
-
-void loop(void)
-{
-  if(interrupt == 1){
-    play_tone(tone_test, sizeof(tone_test));
-    interrupt = 0;
-    play_tone(tone_clear, sizeof(tone_clear));
-  }
-}
-#endif /* REGENERATE_TONE */
-
-#if 1 /* RECEIVE_TONE (i2c Master) */
-
-void test(void)
-{
-  Serial.println("test");
-  status_register_read(); 
-}
-/* 
- *  
- *  
  *  TONE DETECTION 
  *
  *
  */
 
-void initializeDTMF_Receive(void);
+void InitializeDTMF(void);
 int seconds(int sec);
+
+void ToneIRQ(void);
+void ProcessTone(long int input);
 
 void setup(void)
 {
   Serial.begin(9600);
   while(!Serial);
-  attachInterrupt(digitalPinToInterrupt(IRQ_NOT), print_received, CHANGE); /* READ STATUS REGISTER TO CLEAR INTERRUPT */
-  initializeDTMF_Receive();
+  attachInterrupt(digitalPinToInterrupt(IRQ_NOT), ToneIRQ, CHANGE); /* READ STATUS REGISTER TO CLEAR INTERRUPT */
+  InitializeDTMF();
   delay(100);
   Wire.begin(); /* i2c communication */
 }
@@ -133,211 +67,105 @@ void setup(void)
 void loop(void)
 {
   if(interrupt){
-    interrupt = 0;
-    process_data(tone_received);
-    Serial.print("Tardis:~ Detected$ ");
-    Serial.println(tone_received);
+	interrupt = 0;
+	ProcessTone(gtone_received);
+	Serial.print("Tardis:~ Detected$ ");
+	Serial.println(gtone_received);
   }
 }
-#endif /* RECEIVE_TONE (i2c Master) */
 
 //--------------------------------------------------------------------------
 // 2017-05-23 Newer functions.
 void
-initializeDTMF_Receive(void)
+InitializeDTMF(void)
 {
-  bus_mode(WRITE);
+  BusMode(WRITE);
   pinMode(IRQ_NOT, INPUT);
   pinMode(RS0, OUTPUT);
   pinMode(CS_NOT, OUTPUT);
   pinMode(RW, OUTPUT);
-  reset();
+  Reset();
   return;
 }
 
-//---------------------------------
-// timeout: time in seconds
-void timeout(int time)
+int
+TimeoutMilliseconds(unsigned long start, unsigned long timeout_ms)
 {
-  static unsigned long prev_time = 0;
-  unsigned long current_time = second();
-
-  if()
+  unsigned long now = millis();
+  unsigned long elapsed = now - start;
+  if(elapsed > timeout_ms){return 0;}
+  return 1;
 }
 
 // End of changes.
 
-void reset(void)
+
+
+void
+ToneIRQ(void)
 {
-	delay(100);
-	control_register_write(B0000);
-	control_register_write(B0000);
-	control_register_write(B1100);
-	control_register_write(B0000);
-	status_register_read();
-}
-
-byte status_register_read(void)
-{
-	byte value = 0;
-	bus_mode(READ);
-	digitalWrite(RW, HIGH);
-	digitalWrite(RS0, HIGH);
-	digitalWrite(CS_NOT, LOW);
-	value = bus_read();
-	digitalWrite(CS_NOT, HIGH);
-
- return value;
-}
-
-void transmit_register_write(byte value)
-{
-	bus_write(value);
-	digitalWrite(RS0, LOW);
-	digitalWrite(RW, LOW);
-	digitalWrite(CS_NOT, LOW);
-	digitalWrite(CS_NOT, HIGH);
-
-	return;
-}
-
-void control_register_write(byte value)
-{
-	bus_write(value);
-  digitalWrite(CS_NOT, LOW);
-	digitalWrite(RS0, HIGH);
-	digitalWrite(RW, LOW);
-	digitalWrite(CS_NOT, HIGH);
-
-	return;
-}
-
-void bus_mode(byte mode)
-{
-	if(mode == WRITE){
-		pinMode(D0, OUTPUT);
-		pinMode(D1, OUTPUT);
-		pinMode(D2, OUTPUT);
-		pinMode(D3, OUTPUT);
-	}
-	else if( mode == READ){
-		pinMode(D0, INPUT);
-		pinMode(D1, INPUT);
-		pinMode(D2, INPUT);
-		pinMode(D3, INPUT);
-	}
-	return;
-}
-
-byte bus_read(void)
-{
-	bus_mode(READ);
-	byte value = 0;
-	bitWrite(value, 0, digitalRead(D0));
-	bitWrite(value, 1, digitalRead(D1));
-	bitWrite(value, 2, digitalRead(D2));
-	bitWrite(value, 3, digitalRead(D3));
-
-	return value;
-}
-
-void bus_write(byte value)
-{
-	bus_mode(WRITE);
-	digitalWrite(D0, bitRead(value, 0));
-	digitalWrite(D1, bitRead(value, 1));
-	digitalWrite(D2, bitRead(value, 2));
-	digitalWrite(D3, bitRead(value, 3));
-
-	return;
-}
-
-byte read_receive_register(void)
-{
-  bus_mode(READ);
-  digitalWrite(RW, HIGH);
-  digitalWrite(RS0, LOW);
-  digitalWrite(CS_NOT, LOW);
-  tone_received = bus_read();
-
-  return tone_received;
-}
-
-void print_received(void)
-{
-    interrupt_time = millis();
-    if(interrupt_time - last_interrupt > 100){
-      Serial.println("Interrupt...");
-      interrupt = 1;
-      read_receive_register();
-      last_interrupt = interrupt_time;
-      status_register_read();
-    }
-}
-
-void play_tone(byte *value, int len)
-{
-	control_register_write(B1011);
-	control_register_write(B0000);
-	for(int i = 0; i < len; i++){
-		transmit_register_write(value[i]);
-		delay(500);
+	interrupt_time = millis();
+	if(interrupt_time - last_interrupt > 100){
+	  interrupt = 1;
+	  ReadReceiveRegister();
+	  ReadStatusRegister();
+	  last_interrupt = interrupt_time;
 	}
 }
 
-void simulate(void)
+void 
+ProcessTone(long int input)
 {
-  interrupt_time2 = millis();
-  if(interrupt_time2 - last_interrupt2 > 250)
-  {
-    interrupt = 1;
-    last_interrupt2 = interrupt_time2;
-  }
-}
+	#ifdef DEBUG
+		Serial.print(F("Horizon:~ Tardis-Debug$ Input: "));
+		Serial.println(input);
+	#endif
 
-void process_data(long int input)
-{
-  Serial.println(F("Tardis:~ Debug$ process_data running"));
-  Serial.print(F("Tardis:~ Debug$ input = "));
-  Serial.println(input);
-  
-  if(input == 12){
-    Serial.print(F("Tardis:~ Debug$ # found! gcommand = "));
-    Serial.println(gcommand);
-    execute_command(gcommand);
-  }
-  if(input == 11){
-    Serial.print(F("Tardis:~ Debug$ * found! gcommand = "));
-    Serial.println(gcommand);
-    gcommand = input;
-  }
-  else{
-    Serial.print(F("Tardis:~ Concatenate$ gcommand: "));
-    Serial.print(gcommand);  
-    Serial.print(F("  input: "));
-    Serial.println(input);
-    gcommand = concatenate(gcommand, input);
-    Serial.print(F("Tardis:~ Concatenate$ Result: "));
-    Serial.println(gcommand);
-  }
+	if(input == 12){
+
+		#ifdef DEBUG
+			Serial.print(F("Horizon:~ Tardis-Debug$ Execute: "));
+			Serial.println(gcommand);
+		#endif
+		if(gcommand == star){return;}
+		else{execute_command(gcommand);}
+	}
+	if(input == 11){gcommand = input;}
+
+	else{
+
+		#ifdef DEBUG
+			Serial.print(F("Tardis:~ Concatenate$ gcommand: "));
+			Serial.print(gcommand);  
+			Serial.print(F("  input: "));
+			Serial.println(input);
+		#endif
+
+		gcommand = concatenate(gcommand, input);
+
+		#ifdef DEBUG
+			Serial.print(F("Horizon:~ Tardis-Debug$ Tones Received: "));
+			Serial.print(gcommand);  
+		#endif
+	}
 }
 
 void execute_command(long int command)
 {
   switch (command){
-    case 11123:
-      Wire.beginTransmission(7); // transmit to device #8
-      Wire.write(0x07);              // sends one byte
-      Wire.endTransmission();
-      delay(100);
-    break;
+	case 11123:
+	  Wire.beginTransmission(7); // transmit to device #8
+	  Wire.write(0x07);              // sends one byte
+	  Wire.endTransmission();
+	  delay(100);
+	break;
 
-    default:
-      Wire.beginTransmission(7); // transmit to device #8
-      Wire.write(0xff);              // sends one byte
-      Wire.endTransmission();
-      delay(100);
-    break;
+	default:
+	  Wire.beginTransmission(7); // transmit to device #8
+	  Wire.write(0xff);              // sends one byte
+	  Wire.endTransmission();
+	  delay(100);
+	break;
   }
 }
 
