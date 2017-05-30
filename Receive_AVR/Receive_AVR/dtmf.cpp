@@ -1,117 +1,123 @@
 #include "dtmf.h"
+#include "buffer.h"
+
+/* Version: 0v00 */
+
+void
+MT8880C_RX_Init(t_mt8880c *mt8880c_rx)
+{
+	mt8880c_rx->d0 = 3;
+}
 
 void 
-Reset(void)
+Reset(t_mt8880c *mt8880c)
 {
 	delay(100);
-	WriteControlRegister(B0000);
-	WriteControlRegister(B0000);
-	WriteControlRegister(B1100);
-	WriteControlRegister(B0000);
-	ReadStatusRegister();
+	WriteControlRegister(mt8880c, B0000);
+	WriteControlRegister(mt8880c, B0000);
+	WriteControlRegister(mt8880c, B1100);
+	WriteControlRegister(mt8880c, B0000);
+	ReadStatusRegister(mt8880c);
 }
 
 byte 
-ReadStatusRegister(void)
+ReadStatusRegister(t_mt8880c *mt8880c)
 {
 	byte value = 0;
-	BusMode(READ);
-	digitalWrite(RW, HIGH);
-	digitalWrite(RS0, HIGH);
-	digitalWrite(CS_NOT, LOW);
+	BusMode(mt8880c, READ);
+	digitalWrite(mt8880c->rw, HIGH);
+	digitalWrite(mt8880c->rs0, HIGH);
+	digitalWrite(mt8880c->not_cs, LOW);
 	value = BusRead();
-	digitalWrite(CS_NOT, HIGH);
+	digitalWrite(mt8880c->not_cs, HIGH);
 
  return value;
 }
 
 void
-WriteTransmitRegister(byte value)
+WriteTransmitRegister(t_mt8880c *mt8880c, byte value)
 {
-	BusWrite(value);
-	digitalWrite(RS0, LOW);
-	digitalWrite(RW, LOW);
-	digitalWrite(CS_NOT, LOW);
-	digitalWrite(CS_NOT, HIGH);
-
-	return;
+	BusWrite(mt8880c, value);
+	digitalWrite(mt8880c->rs0, LOW);
+	digitalWrite(mt8880c->rw, LOW);
+	digitalWrite(mt8880c->not_cs, LOW);
+	digitalWrite(mt8880c->not_cs, HIGH);
 }
 
 void
-WriteControlRegister(byte value)
+WriteControlRegister(t_mt8880c *mt8880c, byte value)
 {
-	BusWrite(value);
-  digitalWrite(CS_NOT, LOW);
-	digitalWrite(RS0, HIGH);
-	digitalWrite(RW, LOW);
-	digitalWrite(CS_NOT, HIGH);
-
-	return;
+	BusWrite(mt8880c, value);
+	digitalWrite(mt8880c->not_cs, LOW);
+	digitalWrite(mt8880c->rs0, HIGH);
+	digitalWrite(mt8880c->rw, LOW);
+	digitalWrite(mt8880c->not_cs, HIGH);
 }
 
 void
-BusMode(byte mode)
+BusMode(t_mt8880c *mt8880c, byte mode)
 {
 	if(mode == WRITE){
-		pinMode(D0, OUTPUT);
-		pinMode(D1, OUTPUT);
-		pinMode(D2, OUTPUT);
-		pinMode(D3, OUTPUT);
+		pinMode(mt8880c->d0, OUTPUT);
+		pinMode(mt8880c->d1, OUTPUT);
+		pinMode(mt8880c->d2, OUTPUT);
+		pinMode(mt8880c->d3, OUTPUT);
 	}
 	else if( mode == READ){
-		pinMode(D0, INPUT);
-		pinMode(D1, INPUT);
-		pinMode(D2, INPUT);
-		pinMode(D3, INPUT);
+		pinMode(mt8880c->d0, INPUT);
+		pinMode(mt8880c->d1, INPUT);
+		pinMode(mt8880c->d2, INPUT);
+		pinMode(mt8880c->d3, INPUT);
 	}
-	return;
 }
 
 byte
-BusRead(void)
+BusRead(t_mt8880c *mt8880c)
 {
-	BusMode(READ);
 	byte value = 0;
-	bitWrite(value, 0, digitalRead(D0));
-	bitWrite(value, 1, digitalRead(D1));
-	bitWrite(value, 2, digitalRead(D2));
-	bitWrite(value, 3, digitalRead(D3));
+
+	BusMode(mt8880c, READ);
+	bitWrite(value, 0, digitalRead(mt8880c->d0));
+	bitWrite(value, 1, digitalRead(mt8880c->d1));
+	bitWrite(value, 2, digitalRead(mt8880c->d2));
+	bitWrite(value, 3, digitalRead(mt8880c->d3));
 
 	return value;
 }
 
 void
-BusWrite(byte value)
+BusWrite(t_mt8880c *mt8880c, byte value)
 {
-	BusMode(WRITE);
-	digitalWrite(D0, bitRead(value, 0));
-	digitalWrite(D1, bitRead(value, 1));
-	digitalWrite(D2, bitRead(value, 2));
-	digitalWrite(D3, bitRead(value, 3));
+	BusMode(mt8880c, WRITE);
+	digitalWrite(mt8880c->d0, bitRead(value, 0));
+	digitalWrite(mt8880c->d1, bitRead(value, 1));
+	digitalWrite(mt8880c->d2, bitRead(value, 2));
+	digitalWrite(mt8880c->d3, bitRead(value, 3));
 
 	return;
 }
 
 byte
-ReadReceiveRegister(void)
+ReadReceiveRegister(t_mt8880c *mt8880c)
 {
-  byte tone_rx;
-  BusMode(READ);
-  digitalWrite(RW, HIGH);
-  digitalWrite(RS0, LOW);
-  digitalWrite(CS_NOT, LOW);
-  tone_rx = BusRead();
+  byte tone_rx = 0;
+
+  BusMode(mt8880c, READ);
+  digitalWrite(mt8880c->rw, HIGH);
+  digitalWrite(mt8880c->rs0, LOW);
+  digitalWrite(mt8880c->not_cs, LOW);
+  tone_rx = BusRead(mt8880c);
 
   return tone_rx;
 }
 
 void
-PlayTone(byte *value, int len)
+PlayTone(t_mt8880c *mt8880c ,byte *value, int len)
 {
-	WriteControlRegister(B1011);
-	WriteControlRegister(B0000);
+	WriteControlRegister(mt8880c, B1011);
+	WriteControlRegister(mt8880c, B0000);
 	for(int i = 0; i < len; i++){
-		WriteTransmitRegister(value[i]);
+		WriteTransmitRegister(mt8880c, value[i]);
 		delay(500);
 	}
 }

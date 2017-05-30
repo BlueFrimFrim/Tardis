@@ -1,25 +1,16 @@
 #include "tardis.h"
 
+/* Version: 0v00 */
+
 void
-InitializeDTMF(void)
+InitializeDTMF(t_mt8880c *mt8880c)
 {
-  BusMode(WRITE);
-  pinMode(IRQ_NOT, INPUT);
-  pinMode(RS0, OUTPUT);
-  pinMode(CS_NOT, OUTPUT);
-  pinMode(RW, OUTPUT);
-  Reset();
+  BusMode(mt8880c, WRITE);
+  pinMode(mt8880c->not_irq, INPUT);
+  pinMode(mt8880c->rs0, OUTPUT);
+  pinMode(mt8880c->not_cs, OUTPUT);
+  pinMode(mt8880c->rw, OUTPUT);
+  Reset(mt8880c);
   return;
 }
 
-/*----------------------------------------------*/
-/* INTERRUPT: Tone received */
-void
-IRQ_ToneReceived(void)
-{
-	interrupt_time = millis();
-	if(interrupt_time - last_interrupt > 100){
-	  sysflg.irq_flg = 1;
-	  last_interrupt = interrupt_time;
-	}
-}

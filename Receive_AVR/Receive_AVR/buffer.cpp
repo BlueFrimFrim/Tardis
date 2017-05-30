@@ -1,5 +1,7 @@
 #include "buffer.h"
 
+/* Version: 0v00 */
+
 void
 BufferInit(t_buffer *buffer, uint8_t *data, uint16_t size)
 {
