@@ -1,5 +1,5 @@
 #include "tardis.h"
-
+/*
 static const byte one = 1;
 static const byte two = 2;
 static const byte three = 3;
@@ -16,6 +16,7 @@ static const byte A = 13;
 static const byte B = 14;
 static const byte C = 15;
 static const byte D = 0;
+*/
 
 byte gtone_received = 0;
 

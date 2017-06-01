@@ -10,6 +10,8 @@ BufferInit(t_buffer *buffer, uint8_t *data, uint16_t size)
 	buffer->wr_ptr = 0;
 	buffer->buff_size = size;
 	buffer->data = data;
+
+	buffer->command = 0;
 }
 
 void

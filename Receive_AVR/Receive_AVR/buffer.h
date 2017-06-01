@@ -14,6 +14,8 @@ typedef struct
 	uint16_t rd_ptr;
 	uint16_t buff_size;
 	uint8_t *data;
+
+	uint64_t command;
 } t_buffer;
 
 /*----------------------------------------------*/

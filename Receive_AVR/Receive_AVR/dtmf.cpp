@@ -1,13 +1,8 @@
 #include "dtmf.h"
 #include "buffer.h"
 
-/* Version: 0v00 */
+/* Version: 0v01 */
 
-void
-MT8880C_RX_Init(t_mt8880c *mt8880c_rx)
-{
-	mt8880c_rx->d0 = 3;
-}
 
 void 
 Reset(t_mt8880c *mt8880c)
@@ -28,7 +23,7 @@ ReadStatusRegister(t_mt8880c *mt8880c)
 	digitalWrite(mt8880c->rw, HIGH);
 	digitalWrite(mt8880c->rs0, HIGH);
 	digitalWrite(mt8880c->not_cs, LOW);
-	value = BusRead();
+	value = BusRead(mt8880c);
 	digitalWrite(mt8880c->not_cs, HIGH);
 
  return value;
