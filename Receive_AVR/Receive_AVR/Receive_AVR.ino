@@ -4,6 +4,14 @@
  Author:	Keegan-Dev
 */
 
+/*----------------------------------------------*/
+/* ADAFRUIT LIBRARIES */
+#include <Adafruit_LEDBackpack.h>
+#include <gfxfont.h>
+#include <Adafruit_GFX.h>
+/*----------------------------------------------*/
+/*----------------------------------------------*/
+/* TARDIS LIBRARIES */
 #include "tardis.h"
 
 t_buffer tone_buff;
@@ -16,6 +24,8 @@ t_mt8880c mt8880c_rx;
 volatile int g_last_irq, g_current_irq = 0; 
 
 volatile uint8_t data = 0;
+
+Adafruit_AlphaNum4 alpha4 = Adafruit_AlphaNum4();
 
 /*----------------------------------------------*/
 /*----------------------------------------------*/
@@ -50,6 +60,12 @@ void setup() {
 	Wire.begin(); /* I2C communication */
 	while (!Serial);
 	Serial.println("Tardis Initialized.");
+	alpha4.begin(0x70);
+	alpha4.writeDigitAscii(0, 'R');
+	alpha4.writeDigitAscii(1, 'X');
+	alpha4.writeDigitAscii(2, 'H');
+	alpha4.writeDigitAscii(3, '4');
+	alpha4.writeDisplay();
 }
 
 // the loop function runs over and over again until power down or reset
