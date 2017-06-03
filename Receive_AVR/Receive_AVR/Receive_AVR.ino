@@ -13,8 +13,9 @@ volatile t_sysflgs sysflgs;
 
 t_mt8880c mt8880c_rx;
 
-
 volatile int g_last_irq, g_current_irq = 0; 
+
+volatile uint8_t data = 0;
 
 /*----------------------------------------------*/
 /*----------------------------------------------*/
@@ -22,9 +23,13 @@ volatile int g_last_irq, g_current_irq = 0;
 void
 IRQ_ToneReceived(void)
 {
+	//uint8_t data = 0;
 	g_current_irq = millis();
 	if (g_current_irq - g_last_irq > 100) {
 		sysflgs.irq_flg = 1;
+		data = ReadReceiveRegister(&mt8880c_rx); /* Read the tone which triggered interrupt. */
+		BufferWrite(&tone_buff, data);
+		ReadStatusRegister(&mt8880c_rx); /* Clear interrupt register. */
 		g_last_irq = g_current_irq;
 	}
 }
@@ -44,18 +49,21 @@ void setup() {
 	Serial.begin(9600); /* Serial communication */
 	Wire.begin(); /* I2C communication */
 	while (!Serial);
+	Serial.println("Tardis Initialized.");
 }
 
 // the loop function runs over and over again until power down or reset
 void loop() {
-	uint8_t data = 0; 
+//	uint8_t data = 0; 
+//	Serial.print("sysflgs.irq = ");
+//	Serial.println(sysflgs.irq_flg);
 	if (sysflgs.irq_flg) {
 		sysflgs.irq_flg = 0;
 
-		data = ReadReceiveRegister(&mt8880c_rx); /* Read the tone which triggered interrupt. */
-		BufferWrite(&tone_buff, data);
-		ReadStatusRegister(&mt8880c_rx); /* Clear interrupt register. */
-
+//		data = ReadReceiveRegister(&mt8880c_rx); /* Read the tone which triggered interrupt. */
+//		BufferWrite(&tone_buff, data);
+//		ReadStatusRegister(&mt8880c_rx); /* Clear interrupt register. */
+		Serial.print("tone_buff = ");
+		Serial.println(data);
 	}
 }
-
