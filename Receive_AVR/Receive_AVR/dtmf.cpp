@@ -1,9 +1,6 @@
 #include "dtmf.h"
 #include "buffer.h"
 
-/* Version: 0v01 */
-
-
 void 
 Reset(t_mt8880c *mt8880c)
 {

@@ -1,8 +1,6 @@
 #ifndef DTMF_H
 #define DTMF_H
 
-/* Version: 0v01 */
-
 #include "Arduino.h"
 
 /*----------------------------------------------*/

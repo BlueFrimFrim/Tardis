@@ -1,14 +1,19 @@
 #ifndef TARDIS_H
 #define TARDIS_H
 
-/* Version: 0v01 */
-
 /*----------------------------------------------*/
-/* Includes */
-
+/* ADAFRUIT LIBRARIES */
+#include <Adafruit_LEDBackpack.h>
+#include <gfxfont.h>
+#include <Adafruit_GFX.h>
+/*----------------------------------------------*/
+/*----------------------------------------------*/
+/* ARDUINO LIBRARIES */
 #include "Arduino.h"
 #include <Wire.h>
 
+/*----------------------------------------------*/
+/* TARDIS LIBRARIES */
 #include "buffer.h"
 #include "dtmf.h"
 
@@ -32,6 +37,10 @@ const byte g_zero = 10;
 const byte g_star = 11;
 const byte g_hash = 12;
 
+const uint8_t g_seg0[10] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+const uint8_t g_seg1[10] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+const uint8_t g_seg3[13] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '*', 'H' };
+
 /*----------------------------------------------*/
 /* Type definitions */
 typedef struct
@@ -41,6 +50,12 @@ typedef struct
 
 /*----------------------------------------------*/
 /* Function declarations */
+extern void WriteDisplay(Adafruit_AlphaNum4 *display);
+extern void SetupDisplay(Adafruit_AlphaNum4 *display);
+extern void UpdateDisplayCounter(Adafruit_AlphaNum4 *display, uint8_t increment);
+extern void UpdateDisplayTone(Adafruit_AlphaNum4 *display, uint8_t tone);
+
+extern int TimeoutMilliseconds(unsigned long start, unsigned long timeout_ms);
 extern void InitializeDTMF(t_mt8880c *mt8880c);
 extern void MT8880C_RX_Init(t_mt8880c *mt8880c_rx);
 extern void ProcessTone(t_buffer *buffer);

@@ -1,8 +1,6 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
-/* Version: 0v00 */
-
 #include "Arduino.h"
 
 /*----------------------------------------------*/
