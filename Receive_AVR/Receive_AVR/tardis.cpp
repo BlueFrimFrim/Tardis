@@ -46,6 +46,37 @@ UpdateDisplayTone(Adafruit_AlphaNum4 *display, uint8_t tone)
 	display->writeDigitAscii(3, g_seg3[s3]);
 }
 
+void 
+ResetDisplay(Adafruit_AlphaNum4 *display)
+{
+	display->writeDigitAscii(0, 'R');
+	display->writeDigitAscii(1, 'S');
+	display->writeDigitAscii(2, 'T');
+	display->writeDigitAscii(3, 'X');
+	delay(100);
+	display->writeDigitAscii(0, 'X');
+	display->writeDigitAscii(1, 'R');
+	display->writeDigitAscii(2, 'S');
+	display->writeDigitAscii(3, 'T');
+	delay(100);
+	display->writeDigitAscii(0, 'T');
+	display->writeDigitAscii(1, 'X');
+	display->writeDigitAscii(2, 'R');
+	display->writeDigitAscii(3, 'S');
+	delay(100);
+	display->writeDigitAscii(0, 'S');
+	display->writeDigitAscii(1, 'T');
+	display->writeDigitAscii(2, 'X');
+	display->writeDigitAscii(3, 'R');
+	delay(100);
+	display->writeDigitAscii(0, 'R');
+	display->writeDigitAscii(1, 'S');
+	display->writeDigitAscii(2, 'T');
+	display->writeDigitAscii(3, 'X');
+	delay(100);
+	WriteDisplay(display);
+}
+
 /*----------------------------------------------*/
 /* DTMF processing functions */
 
@@ -88,15 +119,28 @@ MT8880C_RX_Init(t_mt8880c *mt8880c_rx)
 void
 ProcessTone(t_buffer *buffer)
 {
+	char temp[31] = { '0' };
 	uint8_t tone_in = 0;
 	tone_in = BufferRead(buffer); /* Read tone received. */
 
 	if (tone_in == g_hash) {
-		if (buffer->command == g_star) { return; }
-		else { ExecuteCommand(buffer->command); }
+		if (buffer->cmd == g_star) { 
+			sysflgs.phone_flg = 1;
+			return; 
+		}
+		else { ExecuteCommand(buffer->cmd); }
 	}
-	if (tone_in == g_star) { buffer->command = tone_in; }
-	else { buffer->command = Concatenate(buffer->buff_size, tone_in); }
+	else if (tone_in == g_star) { buffer->cmd = tone_in; }
+	else if (sysflgs.phone_flg == 1) { 
+		if (tone_in == g_hash) {
+			/* Convert phone number */
+			sprintf(temp, "%d%d%d%d%d%d%d%d%d%d", buffer->phone_num[0], buffer->phone_num[0], 
+				buffer->phone_num[0], buffer->phone_num[0], buffer->phone_num[0], buffer->phone_num[0], 
+				buffer->phone_num[0], buffer->phone_num[0], buffer->phone_num[0], buffer->phone_num[0], )
+		}
+		buffer->phone_num[buffer->phone_ptr] = tone_in + '0'; 
+	}
+	else { buffer->cmd = Concatenate(buffer->buff_size, tone_in); }
 }
 
 void

@@ -46,6 +46,7 @@ const uint8_t g_seg3[13] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '
 typedef struct
 {
     uint8_t irq_flg;
+	uint8_t phone_flg;
 }t_sysflgs;
 
 /*----------------------------------------------*/
@@ -54,12 +55,13 @@ extern void WriteDisplay(Adafruit_AlphaNum4 *display);
 extern void SetupDisplay(Adafruit_AlphaNum4 *display);
 extern void UpdateDisplayCounter(Adafruit_AlphaNum4 *display, uint8_t increment);
 extern void UpdateDisplayTone(Adafruit_AlphaNum4 *display, uint8_t tone);
+extern void ResetDisplay(Adafruit_AlphaNum4 *display);
 
 extern int TimeoutMilliseconds(unsigned long start, unsigned long timeout_ms);
 extern void InitializeDTMF(t_mt8880c *mt8880c);
 extern void MT8880C_RX_Init(t_mt8880c *mt8880c_rx);
 extern void ProcessTone(t_buffer *buffer);
-extern void ExecuteCommand(uint64_t command);
+extern void ExecuteCommand(t_buffer *buffer);
 extern unsigned Concatenate(unsigned x, unsigned y);
 
 #endif /* TARDIS_H */

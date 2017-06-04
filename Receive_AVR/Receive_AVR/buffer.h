@@ -13,7 +13,9 @@ typedef struct
 	uint16_t buff_size;
 	uint8_t *data;
 
-	uint64_t command;
+	uint64_t cmd;
+	uint64_t *phone_num;
+	uint16_t phone_ptr;
 } t_buffer;
 
 /*----------------------------------------------*/

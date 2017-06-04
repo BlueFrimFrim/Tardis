@@ -10,6 +10,8 @@
 /* TARDIS LIBRARIES */
 #include "tardis.h"
 
+#define TIMEOUT1 120000
+
 t_buffer tone_buff;
 uint8_t tone_data[TONE_SIZE];
 
@@ -45,6 +47,7 @@ void setup() {
 	delay(100);
 
 	sysflgs.irq_flg = 0;
+	sysflgs.phone_flg = 0;
 	attachInterrupt(digitalPinToInterrupt(mt8880c_rx.not_irq), IRQ_ToneReceived, CHANGE);
 	
 	Serial.begin(9600); /* Serial communication */
@@ -63,13 +66,18 @@ void loop() {
 		if (counter == 99) { counter = 0; }
 		UpdateDisplayCounter(&display, counter++);
 		if (sysflgs.irq_flg) {
+			unsigned long command_timeout = millis();
 			sysflgs.irq_flg = 0;
-
 			data = ReadReceiveRegister(&mt8880c_rx); /* Read the tone which triggered interrupt. */
+			if (data == 10) { data = 0; }
 			BufferWrite(&tone_buff, data);
 			ReadStatusRegister(&mt8880c_rx); /* Clear interrupt register. */
-		
 			UpdateDisplayTone(&display, data); /* Update segment display */
+			ProcessTone(&tone_buff);
+			if (TimeoutMilliseconds(command_timeout, TIMEOUT1)) {
+				ResetDisplay(&display);
+				BufferReset(&tone_buff);
+			}
 		}
 	}
 }

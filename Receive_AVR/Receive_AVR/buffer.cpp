@@ -9,7 +9,7 @@ BufferInit(t_buffer *buffer, uint8_t *data, uint16_t size)
 	buffer->buff_size = size;
 	buffer->data = data;
 
-	buffer->command = 0;
+	buffer->cmd = 0;
 }
 
 void
@@ -18,6 +18,7 @@ BufferReset(t_buffer *buffer)
 	buffer->len = 0;
 	buffer->rd_ptr = 0;
 	buffer->wr_ptr = 0;
+	buffer->phone_ptr = 0;
 }
 
 uint16_t
