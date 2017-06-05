@@ -133,10 +133,7 @@ ProcessTone(t_buffer *buffer)
 	else if (tone_in == g_star) { buffer->cmd = tone_in; }
 	else if (sysflgs.phone_flg == 1) { 
 		if (tone_in == g_hash) {
-			/* Convert phone number */
-			sprintf(temp, "%d%d%d%d%d%d%d%d%d%d", buffer->phone_num[0], buffer->phone_num[0], 
-				buffer->phone_num[0], buffer->phone_num[0], buffer->phone_num[0], buffer->phone_num[0], 
-				buffer->phone_num[0], buffer->phone_num[0], buffer->phone_num[0], buffer->phone_num[0], )
+			ExecuteCommand(buffer);
 		}
 		buffer->phone_num[buffer->phone_ptr] = tone_in + '0'; 
 	}
@@ -146,6 +143,10 @@ ProcessTone(t_buffer *buffer)
 void
 ExecuteCommand(uint64_t command)
 {
+	if (sysflgs.phone_flg == 1) { 
+		Serial.print("Calling: "); 
+		Serial.println(
+	}
 	switch (command) {
 	case 111234:
 		break;
