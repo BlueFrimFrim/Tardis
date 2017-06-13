@@ -6,16 +6,16 @@
 
 /* Version: 0v01 */
 
-/*----------------------------------------------*/
-/* TARDIS LIBRARIES */
+/*****************************************************************/
+/* Libraries */
 #include "tardis.h"
 
-#define TIMEOUT1 120000
+#define TIMEOUT1 5000
 
 t_buffer tone_buff;
 uint8_t tone_data[TONE_SIZE];
 
-volatile t_sysflgs sysflgs;
+t_sysflgs sysflgs;
 
 t_mt8880c mt8880c_rx;
 
@@ -23,41 +23,53 @@ volatile int g_last_irq, g_current_irq = 0;
 
 Adafruit_AlphaNum4 display = Adafruit_AlphaNum4();
 
-/*----------------------------------------------*/
-/*----------------------------------------------*/
-/* INTERRUPT: Tone received */
-void
-IRQ_ToneReceived(void)
-{
-	//uint8_t data = 0;
-	g_current_irq = millis();
-	if (g_current_irq - g_last_irq > 100) {
-		sysflgs.irq_flg = 1;
-		g_last_irq = g_current_irq;
-	}
-}
-/*----------------------------------------------*/
-/*----------------------------------------------*/
+/*****************************************************************/
+/* ARDUINO PIN Stuff */
+unsigned int _notIRQ = 2; /* Interrupt pin */
 
-// the setup function runs once when you press reset or power the board
+/*****************************************************************/
+/* RECEIVER Stuff */
+int rx_state; /* State of DTMF receiver */
+int rx_buffer; /* Receiving buffer */
+int rx_int; /* Last integer received */
+
+/*****************************************************************/
+/* TRANSMITTER Stuff */
+int tx_int; /* Integer being sent */
+
+/*****************************************************************/
+/* INTERRUPT Stuff */
+int irq_state;
+int irq_timer;
+
+/*****************************************************************/
+void initialize_variables(void)
+{
+	irq_state = 0;
+	rx_state = 0;
+}
+
+/*****************************************************************/
+/*****************************************************************/
 void setup() {
+	noInterrupts();
+	initialize_variables(); 
 	BufferInit(&tone_buff, tone_data, (uint16_t)TONE_SIZE);
 	MT8880C_RX_Init(&mt8880c_rx);
 	InitializeDTMF(&mt8880c_rx);
 	delay(100);
+	interrupts();
 
-	sysflgs.irq_flg = 0;
 	sysflgs.phone_flg = 0;
-	attachInterrupt(digitalPinToInterrupt(mt8880c_rx.not_irq), IRQ_ToneReceived, CHANGE);
+	attachInterrupt(digitalPinToInterrupt(_notIRQ), __INT, CHANGE);
 	
 	Serial.begin(9600); /* Serial communication */
 	Wire.begin(); /* I2C communication */
-	while (!Serial);
-	Serial.println("Tardis Initialized.");
+	while (!Serial)
+		;
 	SetupDisplay(&display);
 }
 
-// the loop function runs over and over again until power down or reset
 void loop() {
 	uint8_t data = 0;
 	int counter = 0;
@@ -73,7 +85,7 @@ void loop() {
 			BufferWrite(&tone_buff, data);
 			ReadStatusRegister(&mt8880c_rx); /* Clear interrupt register. */
 			UpdateDisplayTone(&display, data); /* Update segment display */
-			ProcessTone(&tone_buff);
+			ProcessTone(&tone_buff, &sysflgs);
 			if (TimeoutMilliseconds(command_timeout, TIMEOUT1)) {
 				ResetDisplay(&display);
 				BufferReset(&tone_buff);

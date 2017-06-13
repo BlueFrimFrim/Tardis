@@ -51,6 +51,15 @@ typedef struct
 
 /*----------------------------------------------*/
 /* Function declarations */
+
+/*****************************************************************/
+extern void __INT(void);
+extern int dtmf_is_idle();
+extern unsigned int update();
+extern void process();
+extern void execute();
+extern void main_task();
+
 extern void WriteDisplay(Adafruit_AlphaNum4 *display);
 extern void SetupDisplay(Adafruit_AlphaNum4 *display);
 extern void UpdateDisplayCounter(Adafruit_AlphaNum4 *display, uint8_t increment);
@@ -60,8 +69,8 @@ extern void ResetDisplay(Adafruit_AlphaNum4 *display);
 extern int TimeoutMilliseconds(unsigned long start, unsigned long timeout_ms);
 extern void InitializeDTMF(t_mt8880c *mt8880c);
 extern void MT8880C_RX_Init(t_mt8880c *mt8880c_rx);
-extern void ProcessTone(t_buffer *buffer);
-extern void ExecuteCommand(t_buffer *buffer);
+extern void ProcessTone(t_buffer *buffer, t_sysflgs *sysflgs);
+extern void ExecuteCommand(t_buffer *buffer, t_sysflgs *sysflgs);
 extern unsigned Concatenate(unsigned x, unsigned y);
 
 #endif /* TARDIS_H */

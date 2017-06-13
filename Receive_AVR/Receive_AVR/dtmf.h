@@ -24,16 +24,16 @@ typedef struct
 
 /*----------------------------------------------*/
 /* Function declarations */
-extern void Reset(t_mt8880c *mt8880c);
-extern void WriteControlRegister(t_mt8880c *mt8880c, byte value);
-extern void BusMode(t_mt8880c *mt8880c, byte mode);
-extern void WriteTransmitRegister(t_mt8880c *mt8880c, byte value);
-extern void BusWrite(t_mt8880c *mt8880c, byte value);
-extern void PlayTone(t_mt8880c *mt8880c, byte *value, int len);
+extern void Reset(void);
+extern void WriteControlRegister(byte value);
+extern void BusMode (byte mode);
+extern void WriteTransmitRegister(byte value);
+extern void BusWrite(byte value);
+extern void PlayTone(byte *value, int len);
 
 
-extern byte BusRead(t_mt8880c *mt8880c);
-extern byte ReadStatusRegister(t_mt8880c *mt8880c);
-extern byte ReadReceiveRegister(t_mt8880c *mt8880c);
+extern byte BusRead(void);
+extern byte ReadStatusRegister(void);
+extern byte ReadReceiveRegister(void);
 
 #endif /* DTMF_H */

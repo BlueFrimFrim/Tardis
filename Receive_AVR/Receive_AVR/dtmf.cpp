@@ -1,22 +1,21 @@
 #include "dtmf.h"
 #include "buffer.h"
 
-void 
-Reset(t_mt8880c *mt8880c)
+void Reset(void)
 {
 	delay(100);
-	WriteControlRegister(mt8880c, B0000);
-	WriteControlRegister(mt8880c, B0000);
-	WriteControlRegister(mt8880c, B1100);
-	WriteControlRegister(mt8880c, B0000);
-	ReadStatusRegister(mt8880c);
+	WriteControlRegister(B0000);
+	WriteControlRegister(B0000);
+	WriteControlRegister(B1100);
+	WriteControlRegister(B0000);
+	ReadStatusRegister();
 }
 
 byte 
-ReadStatusRegister(t_mt8880c *mt8880c)
+ReadStatusRegister(void)
 {
 	byte value = 0;
-	BusMode(mt8880c, READ);
+	BusMode(READ);
 	digitalWrite(mt8880c->rw, HIGH);
 	digitalWrite(mt8880c->rs0, HIGH);
 	digitalWrite(mt8880c->not_cs, LOW);
@@ -90,7 +89,7 @@ BusWrite(t_mt8880c *mt8880c, byte value)
 }
 
 byte
-ReadReceiveRegister(t_mt8880c *mt8880c)
+ReadReceiveRegister(void)
 {
   byte tone_rx = 0;
 

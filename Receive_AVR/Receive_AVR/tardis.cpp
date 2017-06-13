@@ -117,37 +117,41 @@ MT8880C_RX_Init(t_mt8880c *mt8880c_rx)
 }
 
 void
-ProcessTone(t_buffer *buffer)
+ProcessTone(t_buffer *buffer, t_sysflgs *sysflgs)
 {
-	char temp[31] = { '0' };
 	uint8_t tone_in = 0;
-	tone_in = BufferRead(buffer); /* Read tone received. */
 
+	tone_in = BufferRead(buffer); /* Read tone received from buffer. */
+
+	/*----*/
+	/* If a '#*' is received set the flag so it records the 
+	/* incoming characters as characters 
+	/*----*/
 	if (tone_in == g_hash) {
 		if (buffer->cmd == g_star) { 
-			sysflgs.phone_flg = 1;
+			sysflgs->phone_flg = 1;
 			return; 
 		}
-		else { ExecuteCommand(buffer->cmd); }
+		else { ExecuteCommand(buffer, sysflgs); }
 	}
 	else if (tone_in == g_star) { buffer->cmd = tone_in; }
-	else if (sysflgs.phone_flg == 1) { 
+	else if (sysflgs->phone_flg == 1) { 
 		if (tone_in == g_hash) {
-			ExecuteCommand(buffer);
+			ExecuteCommand(buffer, sysflgs);
 		}
-		buffer->phone_num[buffer->phone_ptr] = tone_in + '0'; 
+//		buffer->phone_num[buffer->phone_ptr] = tone_in + '0'; /* Convert to char */
 	}
 	else { buffer->cmd = Concatenate(buffer->buff_size, tone_in); }
 }
 
 void
-ExecuteCommand(uint64_t command)
+ExecuteCommand(t_buffer *buffer, t_sysflgs *sysflgs)
 {
-	if (sysflgs.phone_flg == 1) { 
+	if (sysflgs->phone_flg == 1) { 
 		Serial.print("Calling: "); 
-		Serial.println(
+		Serial.println(buffer->phone_num);
 	}
-	switch (command) {
+	switch (buffer->cmd) {
 	case 111234:
 		break;
 	default:
