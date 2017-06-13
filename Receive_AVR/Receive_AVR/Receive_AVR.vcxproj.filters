@@ -41,5 +41,8 @@
     <ClCompile Include="tardis.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="receive_avr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -9,9 +9,7 @@
 #define WRITE 0
 
 /*----------------------------------------------*/
-/* Type definitions */
-typedef struct
-{
+/* ARDUINO PINS */
 	byte d0;
 	byte d1;
 	byte d2;
@@ -20,7 +18,6 @@ typedef struct
 	byte rs0;
 	byte not_cs;
 	byte rw;
-} t_mt8880c;
 
 /*----------------------------------------------*/
 /* Function declarations */

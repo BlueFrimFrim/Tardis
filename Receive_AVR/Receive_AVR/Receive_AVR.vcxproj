@@ -94,6 +94,7 @@
   <ItemGroup>
     <ClCompile Include="buffer.cpp" />
     <ClCompile Include="dtmf.cpp" />
+    <ClCompile Include="receive_avr.cpp" />
     <ClCompile Include="tardis.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
