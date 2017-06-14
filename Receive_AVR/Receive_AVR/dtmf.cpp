@@ -1,6 +1,11 @@
 #include "dtmf.h"
 #include "buffer.h"
 
+/*
+ *
+ */
+
+
 void Reset(void)
 {
 	delay(100);
@@ -26,7 +31,7 @@ ReadStatusRegister(void)
 }
 
 void
-WriteTransmitRegister(t_mt8880c *mt8880c, byte value)
+WriteTransmitRegister(byte value)
 {
 	BusWrite(mt8880c, value);
 	digitalWrite(mt8880c->rs0, LOW);
