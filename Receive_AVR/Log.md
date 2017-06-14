@@ -1,5 +1,5 @@
-##2017-06-13
-#Log 1 01:03*
+##2017-06-13##
+#Log 1 01:03#
     > Added 'receive_avr.cpp' to project. There is no '.h' file because all the functions are declared
         in 'tardis.h'. 
 
@@ -23,8 +23,8 @@
     > dtmf.cpp/h needs to be edited further.  Right now everything relies on structs from outside the .cpp file.
         This will be used for different parts of the Tardis so it needs to be self-sufficient. 
 
-##2017-06-13
-#Log 2 22:40
+##2017-06-13##
+#Log 2 22:40#
     > 'dtmf.cpp' and 'dtmf.h' are complete for the most part. They should no longer rely on a big 'struct' 
         in order to function.
 
