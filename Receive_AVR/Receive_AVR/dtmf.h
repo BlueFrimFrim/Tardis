@@ -4,22 +4,6 @@
 #include "Arduino.h"
 
 /*----------------------------------------------*/
-/* Definitions */
-#define READ 1
-#define WRITE 0
-
-/*----------------------------------------------*/
-/* ARDUINO PINS */
-	byte d0;
-	byte d1;
-	byte d2;
-	byte d3;
-	byte not_irq;
-	byte rs0;
-	byte not_cs;
-	byte rw;
-
-/*----------------------------------------------*/
 /* Function declarations */
 extern void Reset(void);
 extern void WriteControlRegister(byte value);
@@ -29,8 +13,8 @@ extern void BusWrite(byte value);
 extern void PlayTone(byte *value, int len);
 
 
-extern byte BusRead(void);
-extern byte ReadStatusRegister(void);
-extern byte ReadReceiveRegister(void);
+extern unsigned int BusRead(void);
+extern unsigned int ReadStatusRegister(void);
+extern unsigned int ReadReceiveRegister(void);
 
 #endif /* DTMF_H */

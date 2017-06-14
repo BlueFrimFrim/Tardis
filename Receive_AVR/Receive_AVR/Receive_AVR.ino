@@ -52,21 +52,19 @@ void initialize_variables(void)
 /*****************************************************************/
 /*****************************************************************/
 void setup() {
-	noInterrupts();
+	noInterrupts();	/* Prevent interrupts from tripping during setup. */
 	initialize_variables(); 
-	BufferInit(&tone_buff, tone_data, (uint16_t)TONE_SIZE);
-	MT8880C_RX_Init(&mt8880c_rx);
-	InitializeDTMF(&mt8880c_rx);
-	delay(100);
-	interrupts();
+	dtmf_initialize();
 
-	sysflgs.phone_flg = 0;
+	/* Attach __INT() to interrupt pin */
 	attachInterrupt(digitalPinToInterrupt(_notIRQ), __INT, CHANGE);
 	
 	Serial.begin(9600); /* Serial communication */
 	Wire.begin(); /* I2C communication */
+
 	while (!Serial)
-		;
+		; /* Wait for serial coms */
+
 	SetupDisplay(&display);
 }
 

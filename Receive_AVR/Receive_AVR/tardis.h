@@ -54,11 +54,11 @@ typedef struct
 
 /*****************************************************************/
 extern void __INT(void);
-extern int dtmf_is_idle();
+extern unsigned int dtmf_is_idle();
 extern unsigned int update();
-extern void process();
-extern void execute();
-extern void main_task();
+extern unsigned int process();
+extern unsigned int execute();
+extern unsigned int main_task();
 
 extern void WriteDisplay(Adafruit_AlphaNum4 *display);
 extern void SetupDisplay(Adafruit_AlphaNum4 *display);

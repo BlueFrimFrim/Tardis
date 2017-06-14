@@ -1,10 +1,31 @@
 #include "dtmf.h"
 #include "buffer.h"
 
-/*
- *
- */
+/*****************************************************************/
+/* GENERAL definitions */
+#define READ 1
+#define WRITE 0
 
+/*****************************************************************/
+/* ARDUINO Pins */
+static unsigned int d0 = 3;
+static unsigned int d1 = 4;
+static unsigned int d2 = 5;
+static unsigned int d3 = 6;
+static unsigned int _notIRQ = 2;
+static unsigned int rs0 = 7;
+static unsigned int notCS = 9;
+static unsigned int rw = 8;
+
+void dtmf_initialize(void)
+{
+	BusMode(WRITE);
+	pinMode(_notIRQ, INPUT);
+	pinMode(rs0, OUTPUT);
+	pinMode(notCS, OUTPUT);
+	pinMode(rw, OUTPUT);
+	Reset();
+}
 
 void Reset(void)
 {
@@ -16,16 +37,15 @@ void Reset(void)
 	ReadStatusRegister();
 }
 
-byte 
-ReadStatusRegister(void)
+unsigned int ReadStatusRegister(void)
 {
 	byte value = 0;
 	BusMode(READ);
-	digitalWrite(mt8880c->rw, HIGH);
-	digitalWrite(mt8880c->rs0, HIGH);
-	digitalWrite(mt8880c->not_cs, LOW);
-	value = BusRead(mt8880c);
-	digitalWrite(mt8880c->not_cs, HIGH);
+	digitalWrite(rw, HIGH);
+	digitalWrite(rs0, HIGH);
+	digitalWrite(notCS, LOW);
+	value = BusRead();
+	digitalWrite(notCS, HIGH);
 
  return value;
 }

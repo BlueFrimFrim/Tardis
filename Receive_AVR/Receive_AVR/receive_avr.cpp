@@ -31,7 +31,7 @@ void __INT(void)
 }
 
 /*****************************************************************/
-int dtmf_is_idle()
+unsigned int dtmf_is_idle()
 {
 	if (irq_state)
 		return 0;
@@ -48,16 +48,16 @@ unsigned int update() {
 }
 
 /*****************************************************************/
-void process() {
+unsigned int process() {
 	;
 }
 
 /*****************************************************************/
-void execute() { ; }
+unsigned int void execute() { ; }
 
 /*****************************************************************/
 /*****************************************************************/
-void main_task()
+unsigned int main_task()
 {
 	update();
 	process();
