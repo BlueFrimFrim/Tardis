@@ -1,26 +1,15 @@
 #include "tardis.h"
 
-/*****************************************************************/
-/* ARDUINO PIN Stuff */
-unsigned int _notIRQ = 2; /* Interrupt pin */
+unsigned int _notIRQ = 2; 
 
-/*****************************************************************/
-/* RECEIVER Stuff */
-int rx_state = 0; /* State of DTMF receiver */
-int rx_buffer = 0; /* Receiving buffer */
-
-/*****************************************************************/
-/* TRANSMITTER Stuff */
-int tx_state = 0; /* State of CUSTOM phone number */
-unsigned long int tx_data = 0; /* Buffer for incoming data */
-
-/*****************************************************************/
-/* INTERRUPT Stuff */
+int rx_state = 0;
+int rx_buffer = 0; 
+int custom_number_state = 0;
 int irq_state = 0;
 int irq_timer = 0;
 
-/*****************************************************************/
-/* Interrupt Service Routine */
+unsigned long int tx_data = 0;
+
 void __INT(void)
 {
 	int t = millis();
@@ -30,7 +19,6 @@ void __INT(void)
 	}
 }
 
-/*****************************************************************/
 unsigned int dtmf_is_idle()
 {
 	if (irq_state)
@@ -39,7 +27,6 @@ unsigned int dtmf_is_idle()
 		return 1;
 }
 
-/*****************************************************************/
 unsigned int update() { 
 	if (!dtmf_is_idle()) {
 		tx_data = ReadReceiveRegister();
@@ -47,16 +34,12 @@ unsigned int update() {
 	}
 }
 
-/*****************************************************************/
 unsigned int process() {
 	;
 }
 
-/*****************************************************************/
 unsigned int void execute() { ; }
 
-/*****************************************************************/
-/*****************************************************************/
 unsigned int main_task()
 {
 	update();
