@@ -6,43 +6,46 @@
 
 /* Version: 0v01 */
 
-/*****************************************************************/
-/* Libraries */
-#include "tardis.h"
+/*
+ * function_name - short function description
+ * @func: short function description
+ * @data: variable passed 
+ *
+ * Returns a thing.
+ * Note: this is a note
+ */
+
+#include "includes/tardis.h"
 
 #define TIMEOUT1 5000
+
+/*
+ * THIS SETS ALL THE PINS FOR THE MT8880C
+ */
+t_dtmf_pins pins;
 
 t_buffer tone_buff;
 uint8_t tone_data[TONE_SIZE];
 
 t_sysflgs sysflgs;
 
-t_mt8880c mt8880c_rx;
+//t_mt8880c mt8880c_rx;
 
 volatile int g_last_irq, g_current_irq = 0; 
 
 Adafruit_AlphaNum4 display = Adafruit_AlphaNum4();
 
-/*****************************************************************/
-/* ARDUINO PIN Stuff */
 unsigned int _notIRQ = 2; /* Interrupt pin */
 
-/*****************************************************************/
-/* RECEIVER Stuff */
 int rx_state; /* State of DTMF receiver */
 int rx_buffer; /* Receiving buffer */
 int rx_int; /* Last integer received */
 
-/*****************************************************************/
-/* TRANSMITTER Stuff */
 int tx_int; /* Integer being sent */
 
-/*****************************************************************/
-/* INTERRUPT Stuff */
 int irq_state;
 int irq_timer;
 
-/*****************************************************************/
 void initialize_variables(void)
 {
 	irq_state = 0;

@@ -86,16 +86,19 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="buffer.h" />
-    <ClInclude Include="dtmf.h" />
-    <ClInclude Include="tardis.h" />
+    <ClInclude Include="includes\buffer.h" />
+    <ClInclude Include="includes\dtmf.h" />
+    <ClInclude Include="includes\ext\includes.h" />
+    <ClInclude Include="includes\init.h" />
+    <ClInclude Include="includes\tardis.h" />
     <ClInclude Include="__vm\.Receive_AVR.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="buffer.cpp" />
-    <ClCompile Include="dtmf.cpp" />
-    <ClCompile Include="receive_avr.cpp" />
-    <ClCompile Include="tardis.cpp" />
+    <ClCompile Include="lib\buffer.cpp" />
+    <ClCompile Include="lib\dtmf.cpp" />
+    <ClCompile Include="lib\init.cpp" />
+    <ClCompile Include="lib\receive_avr.cpp" />
+    <ClCompile Include="lib\tardis.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

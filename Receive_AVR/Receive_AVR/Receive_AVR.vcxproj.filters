@@ -18,30 +18,39 @@
     <None Include="Receive_AVR.ino" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="buffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dtmf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tardis.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="__vm\.Receive_AVR.vsarduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\dtmf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\tardis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\ext\includes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\init.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="buffer.cpp">
+    <ClCompile Include="lib\buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dtmf.cpp">
+    <ClCompile Include="lib\dtmf.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tardis.cpp">
+    <ClCompile Include="lib\receive_avr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="receive_avr.cpp">
+    <ClCompile Include="lib\tardis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\init.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
