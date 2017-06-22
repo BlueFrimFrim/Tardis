@@ -84,3 +84,14 @@ void(*init[]) (void) = {
 - Get rid of `buffer.cpp/h`
 - Make the same code style changes to receive_avr.cpp
 
+### 2017-06-21
+#### Log 4 23:45
+Compiled `dtmf.cpp/h` and fixed all the errors. 
+
+Started working on `receive_avr.cpp/h` and `irq.cpp/h`.
+
+**TODO:**
+- Finish writing `irq.cpp/h` so it compiled and is self-contained.
+- Put TARDIS functionality into `update` `process` and `execute`.
+  - _Note: Should `update` be split up into `update` and `fetch`. Put 
+  `update` last, after `execute`.

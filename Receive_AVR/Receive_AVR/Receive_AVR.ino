@@ -15,16 +15,12 @@
  * Note: this is a note
  */
 
-#include "includes/tardis.h"
+#include "tardis.h"
 
 #define TIMEOUT1 5000
 
-/*
- * THIS SETS ALL THE PINS FOR THE MT8880C
- */
 t_dtmf_pins pins;
 
-t_buffer tone_buff;
 uint8_t tone_data[TONE_SIZE];
 
 t_sysflgs sysflgs;
