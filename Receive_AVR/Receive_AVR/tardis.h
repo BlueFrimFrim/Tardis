@@ -5,15 +5,6 @@
 
 #define TONE_SIZE 256
 
-typedef unsigned char u8;
-typedef signed char s8;
-typedef unsigned int u16;
-typedef signed int s16;
-typedef unsigned long int u32;
-typedef signed long int s32;
-typedef unsigned long long u64;
-typedef signed long long s64;
-
 const byte g_one = 1;
 const byte g_two = 2;
 const byte g_three = 3;
@@ -28,9 +19,7 @@ const byte g_zero = 10;
 const byte g_star = 11;
 const byte g_hash = 12;
 
-const uint8_t g_seg0[10] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-const uint8_t g_seg1[10] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-const uint8_t g_seg3[13] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '*', 'H' };
+
 
 /*----------------------------------------------*/
 /* Type definitions */

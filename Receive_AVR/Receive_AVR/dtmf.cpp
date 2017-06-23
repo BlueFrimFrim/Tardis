@@ -36,7 +36,7 @@ static void wr_tx_reg(byte value)
 	digitalWrite(pins.ncs, HIGH);
 }
 
-static void wr_ctrl_reg(u8 value)
+static void wr_ctrl_reg(uint8_t value)
 {
 	wr_bus(value);
 	digitalWrite(pins.ncs, LOW);
@@ -45,7 +45,7 @@ static void wr_ctrl_reg(u8 value)
 	digitalWrite(pins.ncs, HIGH);
 }
 
-static void bus_mode(u8 mode)
+static void bus_mode(uint8_t mode)
 {
 	if(mode == WRITE){
 		pinMode(pins.d0, OUTPUT);
@@ -61,7 +61,7 @@ static void bus_mode(u8 mode)
 	}
 }
 
-static u8 rd_bus(void)
+static uint8_t rd_bus(void)
 {
 	byte value = 0;
 
@@ -74,7 +74,7 @@ static u8 rd_bus(void)
 	return value;
 }
 
-static void wr_bus(u8 value)
+static void wr_bus(uint8_t value)
 {
 	bus_mode(WRITE);
 	digitalWrite(pins.d0, bitRead(value, 0));
@@ -124,9 +124,9 @@ void set_pins(t_dtmf_pins *gpins)
  *
  * @return - dtmf tone received
  */
-u8 rd_rx_reg(void)
+uint8_t rd_rx_reg(void)
 {
-	u8 tone_rx = 0;
+	uint8_t tone_rx = 0;
 
 	bus_mode(READ);
 	
@@ -145,9 +145,9 @@ u8 rd_rx_reg(void)
  *
  * @return - previous dtmf tone recieved
  */
-u8 rd_status_reg(void)
+uint8_t rd_status_reg(void)
 {
-	u8 value = 0;
+	uint8_t value = 0;
 
 	bus_mode(READ);
 

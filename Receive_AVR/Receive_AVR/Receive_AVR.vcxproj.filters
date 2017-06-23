@@ -27,13 +27,13 @@
     <ClInclude Include="init.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="irq.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="receive_avr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tardis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="display.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,13 +44,13 @@
     <ClCompile Include="init.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="irq.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="receive_avr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tardis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="display.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

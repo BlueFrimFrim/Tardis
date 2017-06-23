@@ -15,7 +15,11 @@
  * Note: this is a note
  */
 
-#include "tardis.h"
+#include <gfxfont.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_LEDBackpack.h>
+
+#include "receive_avr.h"
 
 #define TIMEOUT1 5000
 
@@ -39,41 +43,52 @@ int rx_int; /* Last integer received */
 
 int tx_int; /* Integer being sent */
 
-int irq_state;
-int irq_timer;
+unsigned int irq_state;
+unsigned int irq_timer;
 
-void initialize_variables(void)
+static void init_variables(void)
 {
 	irq_state = 0;
 	rx_state = 0;
 }
 
-/*****************************************************************/
-/*****************************************************************/
-void setup() {
-	noInterrupts();	/* Prevent interrupts from tripping during setup. */
-	initialize_variables(); 
-	dtmf_initialize();
+static void irq_event(void)
+{
+	int t = millis();
+	if (t - irq_timer > 100) {
+		irq_state = 1;
+		irq_timer = t;
+	}
+}
 
-	/* Attach __INT() to interrupt pin */
-	attachInterrupt(digitalPinToInterrupt(_notIRQ), __INT, CHANGE);
+void setup() {
+	noInterrupts();
+	init_variables();
+	setup_task();
+	init_display(&display);
+
+	attachInterrupt(digitalPinToInterrupt(_notIRQ), irq_event, CHANGE);
 	
 	Serial.begin(9600); /* Serial communication */
 	Wire.begin(); /* I2C communication */
 
 	while (!Serial)
 		; /* Wait for serial coms */
-
-	SetupDisplay(&display);
+	interrupts();
 }
 
 void loop() {
-	uint8_t data = 0;
 	int counter = 0;
+	unsigned long mtsk_time = 0;
 
 	while (1) {
-		if (counter == 99) { counter = 0; }
-		UpdateDisplayCounter(&display, counter++);
+		if (counter == 99) 
+			counter = 0;
+		display_counter(&display, counter++);
+
+		mtsk_time = millis();
+		main_task(irq_state, mtsk_time);
+
 		if (sysflgs.irq_flg) {
 			unsigned long command_timeout = millis();
 			sysflgs.irq_flg = 0;
@@ -83,7 +98,7 @@ void loop() {
 			ReadStatusRegister(&mt8880c_rx); /* Clear interrupt register. */
 			UpdateDisplayTone(&display, data); /* Update segment display */
 			ProcessTone(&tone_buff, &sysflgs);
-			if (TimeoutMilliseconds(command_timeout, TIMEOUT1)) {
+			if (timeout_ms(command_timeout, TIMEOUT1)) {
 				ResetDisplay(&display);
 				BufferReset(&tone_buff);
 			}

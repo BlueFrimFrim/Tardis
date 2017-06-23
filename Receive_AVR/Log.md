@@ -95,3 +95,10 @@ Started working on `receive_avr.cpp/h` and `irq.cpp/h`.
 - Put TARDIS functionality into `update` `process` and `execute`.
   - _Note: Should `update` be split up into `update` and `fetch`. Put 
   `update` last, after `execute`.
+
+### 2017-06-22
+#### Log 4 22:53
+Continued working on `receive_avr.cpp/h`
+
+**TODO:**
+- Integrate timeout into `main_task`
