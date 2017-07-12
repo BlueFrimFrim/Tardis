@@ -90,6 +90,7 @@
     <ClInclude Include="dtmf.h" />
     <ClInclude Include="init.h" />
     <ClInclude Include="receive_avr.h" />
+    <ClInclude Include="rxtask.h" />
     <ClInclude Include="tardis.h" />
     <ClInclude Include="__vm\.Receive_AVR.vsarduino.h" />
   </ItemGroup>
@@ -98,6 +99,7 @@
     <ClCompile Include="dtmf.cpp" />
     <ClCompile Include="init.cpp" />
     <ClCompile Include="receive_avr.cpp" />
+    <ClCompile Include="rxtask.cpp" />
     <ClCompile Include="tardis.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
