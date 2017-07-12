@@ -65,7 +65,6 @@ void setup() {
 	noInterrupts();
 	init_variables();
 	setup_task();
-	init_display(&display);
 
 	attachInterrupt(digitalPinToInterrupt(_notIRQ), irq_event, CHANGE);
 	
@@ -84,7 +83,6 @@ void loop() {
 	while (1) {
 		if (counter == 99) 
 			counter = 0;
-		display_counter(&display, counter++);
 
 		mtsk_time = millis();
 		main_task(irq_state, mtsk_time);
@@ -96,10 +94,8 @@ void loop() {
 			if (data == 10) { data = 0; }
 			BufferWrite(&tone_buff, data);
 			ReadStatusRegister(&mt8880c_rx); /* Clear interrupt register. */
-			UpdateDisplayTone(&display, data); /* Update segment display */
 			ProcessTone(&tone_buff, &sysflgs);
 			if (timeout_ms(command_timeout, TIMEOUT1)) {
-				ResetDisplay(&display);
 				BufferReset(&tone_buff);
 			}
 		}

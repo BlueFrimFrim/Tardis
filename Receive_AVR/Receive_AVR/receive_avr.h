@@ -3,7 +3,6 @@
 #include "Arduino.h"
 
 #include "dtmf.h"
-#include "display.h"
 
 static unsigned int rx_timeout;
 
