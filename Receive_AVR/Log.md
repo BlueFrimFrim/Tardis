@@ -102,3 +102,16 @@ Continued working on `receive_avr.cpp/h`
 
 **TODO:**
 - Integrate timeout into `main_task`
+
+### 2017-07-11
+#### Log 5 20:20
+Previous log not useful....take note.
+
+Moved into new condo, Tardis work will resume.
+
+First things first. I have decided to move the 7-segment displays from the circuit.
+The libraries don't always work with VisualMicro so it's not a critical feature and 
+will be removed.
+
+The project was a mess...I tried to break things up to make it 'simpler' however
+I just made things worse. Basically I will just keep everything together for now.

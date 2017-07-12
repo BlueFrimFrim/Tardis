@@ -80,22 +80,3 @@ unsigned int *main_task(unsigned int irq_state, unsigned long mtsk_time)
 
 	return 0;
 }
-
-while (1) {
-	if (counter == 99) { counter = 0; }
-	UpdateDisplayCounter(&display, counter++);
-	if (sysflgs.irq_flg) {
-		unsigned long command_timeout = millis();
-		sysflgs.irq_flg = 0;
-		data = ReadReceiveRegister(&mt8880c_rx); /* Read the tone which triggered interrupt. */
-		if (data == 10) { data = 0; }
-		BufferWrite(&tone_buff, data);
-		ReadStatusRegister(&mt8880c_rx); /* Clear interrupt register. */
-		UpdateDisplayTone(&display, data); /* Update segment display */
-		ProcessTone(&tone_buff, &sysflgs);
-		if (TimeoutMilliseconds(command_timeout, TIMEOUT1)) {
-			ResetDisplay(&display);
-			BufferReset(&tone_buff);
-		}
-	}
-}
