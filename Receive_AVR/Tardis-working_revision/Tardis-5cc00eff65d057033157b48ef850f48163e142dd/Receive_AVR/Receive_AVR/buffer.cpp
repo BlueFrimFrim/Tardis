@@ -18,6 +18,8 @@ BufferReset(t_buffer *buffer)
 	buffer->len = 0;
 	buffer->rd_ptr = 0;
 	buffer->wr_ptr = 0;
+
+	Serial.println(F("Buffer reset"));
 }
 
 uint16_t

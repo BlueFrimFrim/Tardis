@@ -16,6 +16,7 @@
 /* TARDIS LIBRARIES */
 #include "buffer.h"
 #include "dtmf.h"
+#include "timeout.h"
 
 /*----------------------------------------------*/
 /* Definitions */

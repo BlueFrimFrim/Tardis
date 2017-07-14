@@ -1,17 +1,33 @@
 #include "timeout.h"
 
-Timeout::timeout(unsigned long timeout_value)
+Timeout_t::Timeout_t(unsigned long timeout_value)
 {
     gstart = 0;
+	gflg = 0;
     gtime = timeout_value;
 }
 
-Timeout::set_timeout()
+void Timeout_t::set_timeout()
 {
     gstart = millis();
 }
 
-Timeout::check()
+void Timeout_t::set_flg()
+{
+	gflg = 1;
+}
+
+int Timeout_t::status()
+{
+	return gflg;
+}
+
+void Timeout_t::clear_flg()
+{
+	gflg = 0;
+}
+
+int Timeout_t::check()
 {
     unsigned long now = millis();
     unsigned long elapsed = now - gstart;

@@ -115,3 +115,19 @@ will be removed.
 
 The project was a mess...I tried to break things up to make it 'simpler' however
 I just made things worse. Basically I will just keep everything together for now.
+
+### 2017-07-13
+#### Log 6 20:45
+Using `tardis-working-revision`. 
+
+Added `timeout.cpp/h` which has the class for timeouts.
+
+Example:
+
+```C++
+    Timeout_t timeout1 = Timeout_t(5000) // 5000ms -> 5s timeout
+    timeout1.set_timeout(); // this sets the current time for reference
+    if(timeout1.check()){ // check if 5s has passed. If yes, run event.
+        event();
+    }
+```

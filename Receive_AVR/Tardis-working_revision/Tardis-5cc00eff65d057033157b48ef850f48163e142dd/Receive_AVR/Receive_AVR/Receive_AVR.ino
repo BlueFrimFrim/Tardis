@@ -20,6 +20,8 @@ t_mt8880c mt8880c_rx;
 volatile int g_last_irq, g_current_irq = 0; 
 
 Adafruit_AlphaNum4 display = Adafruit_AlphaNum4();
+Timeout_t dtmf_timer = Timeout_t(5000);
+
 
 /*----------------------------------------------*/
 /*----------------------------------------------*/
@@ -31,6 +33,7 @@ IRQ_ToneReceived(void)
 	g_current_irq = millis();
 	if (g_current_irq - g_last_irq > 100) {
 		sysflgs.irq_flg = 1;
+		dtmf_timer.set_flg();
 		g_last_irq = g_current_irq;
 	}
 }
@@ -45,6 +48,7 @@ void setup() {
 	delay(100);
 
 	sysflgs.irq_flg = 0;
+
 	attachInterrupt(digitalPinToInterrupt(mt8880c_rx.not_irq), IRQ_ToneReceived, CHANGE);
 	
 	Serial.begin(9600); /* Serial communication */
@@ -62,13 +66,20 @@ void loop() {
 	while (1) {
 		if (counter == 99) { counter = 0; }
 		UpdateDisplayCounter(&display, counter++);
+		dtmf_timer.set_timeout();
+		if (dtmf_timer.status()) {
+			if (dtmf_timer.check())
+			{
+				BufferReset(&tone_buff);
+			}
+		}
 		if (sysflgs.irq_flg) {
 			sysflgs.irq_flg = 0;
 
 			data = ReadReceiveRegister(&mt8880c_rx); /* Read the tone which triggered interrupt. */
 			BufferWrite(&tone_buff, data);
 			ReadStatusRegister(&mt8880c_rx); /* Clear interrupt register. */
-		
+			
 			UpdateDisplayTone(&display, data); /* Update segment display */
 		}
 	}

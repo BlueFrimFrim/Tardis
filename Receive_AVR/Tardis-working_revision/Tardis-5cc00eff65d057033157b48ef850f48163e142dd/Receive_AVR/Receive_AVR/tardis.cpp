@@ -90,7 +90,6 @@ ProcessTone(t_buffer *buffer)
 {
 	uint8_t tone_in = 0;
 	tone_in = BufferRead(buffer); /* Read tone received. */
-
 	if (tone_in == g_hash) {
 		if (buffer->command == g_star) { return; }
 		else { ExecuteCommand(buffer->command); }
