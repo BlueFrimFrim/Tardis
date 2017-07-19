@@ -10,6 +10,9 @@
 /* TARDIS LIBRARIES */
 #include "tardis.h"
 
+#define CHECK_EVERY_MS 10
+#define MIN_STABLE_VALS 2
+
 t_buffer tone_buff;
 uint8_t tone_data[TONE_SIZE];
 
@@ -17,11 +20,17 @@ volatile t_sysflgs sysflgs;
 
 t_mt8880c mt8880c_rx;
 
-volatile int g_last_irq, g_current_irq = 0; 
+volatile int g_last_irq, g_current_irq = 0;
+
+unsigned long five_minutes = 5 * 1000;
 
 Adafruit_AlphaNum4 display = Adafruit_AlphaNum4();
-Timeout_t dtmf_timer = Timeout_t(5000);
+Timeout_t dtmf_timer = Timeout_t(five_minutes);
 
+unsigned long previousMillis;
+char stableVals;
+
+int debounce = 0;
 
 /*----------------------------------------------*/
 /*----------------------------------------------*/
@@ -33,9 +42,13 @@ IRQ_ToneReceived(void)
 	g_current_irq = millis();
 	if (g_current_irq - g_last_irq > 100) {
 		sysflgs.irq_flg = 1;
+
 		dtmf_timer.set_flg();
+		dtmf_timer.set_timeout();
+
 		g_last_irq = g_current_irq;
 	}
+	Serial.println(F("interrupt"));
 }
 /*----------------------------------------------*/
 /*----------------------------------------------*/
@@ -50,7 +63,7 @@ void setup() {
 	sysflgs.irq_flg = 0;
 
 	attachInterrupt(digitalPinToInterrupt(mt8880c_rx.not_irq), IRQ_ToneReceived, CHANGE);
-	
+
 	Serial.begin(9600); /* Serial communication */
 	Wire.begin(); /* I2C communication */
 	while (!Serial);
@@ -62,17 +75,30 @@ void setup() {
 void loop() {
 	uint8_t data = 0;
 	int counter = 0;
+	int timer_status = 0;
 
 	while (1) {
+		if ((millis() - previousMillis) > CHECK_EVERY_MS){
+			previousMillis += CHECK_EVERY_MS;
+			if (sysflgs.irq_flg) {
+				stableVals++;
+				if (stableVals >= MIN_STABLE_VALS) {
+					sysflgs.irq_flg = 0;
+
+					dtmf_timer.set_flg();
+					dtmf_timer.set_timeout();
+
+					stableVals = 0;
+				}
+			}
+			else { stableVals = 0; }
+		}
 		if (counter == 99) { counter = 0; }
 		UpdateDisplayCounter(&display, counter++);
-		dtmf_timer.set_timeout();
-		if (dtmf_timer.status()) {
-			if (dtmf_timer.check())
-			{
-				BufferReset(&tone_buff);
-			}
-		}
+		timer_status = dtmf_timer.status();
+//		Serial.print(F("timer_status: "));
+//		Serial.println(timer_status);
+
 		if (sysflgs.irq_flg) {
 			sysflgs.irq_flg = 0;
 
@@ -81,6 +107,15 @@ void loop() {
 			ReadStatusRegister(&mt8880c_rx); /* Clear interrupt register. */
 			
 			UpdateDisplayTone(&display, data); /* Update segment display */
+		}
+		if (timer_status) {
+			Serial.print("Timer Status:");
+			Serial.println(timer_status);
+			Serial.println((millis()));
+			if (dtmf_timer.check()) {
+				BufferReset(&tone_buff);
+				dtmf_timer.clear_flg();
+			}
 		}
 	}
 }

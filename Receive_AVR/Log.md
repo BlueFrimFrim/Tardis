@@ -131,3 +131,7 @@ Example:
         event();
     }
 ```
+
+### 2017-07-13
+#### Log 7 23:03
+Timeout works! Updated project. Works for 3 seconds.  Have not tested 5 minutes.

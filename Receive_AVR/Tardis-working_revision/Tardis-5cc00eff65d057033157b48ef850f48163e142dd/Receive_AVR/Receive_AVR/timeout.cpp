@@ -25,6 +25,7 @@ int Timeout_t::status()
 void Timeout_t::clear_flg()
 {
 	gflg = 0;
+	gstart = 0;
 }
 
 int Timeout_t::check()
