@@ -30,8 +30,9 @@ Timeout_t dtmf_timer = Timeout_t(five_minutes);
 unsigned long previousMillis;
 char stableVals;
 
-int debounce = 0;
-
+int temp2 = 0;
+int temp = 0;
+unsigned long start;
 /*----------------------------------------------*/
 /*----------------------------------------------*/
 /* INTERRUPT: Tone received */
@@ -62,7 +63,7 @@ void setup() {
 
 	sysflgs.irq_flg = 0;
 
-	attachInterrupt(digitalPinToInterrupt(mt8880c_rx.not_irq), IRQ_ToneReceived, CHANGE);
+//	attachInterrupt(digitalPinToInterrupt(mt8880c_rx.not_irq), IRQ_ToneReceived, CHANGE);
 
 	Serial.begin(9600); /* Serial communication */
 	Wire.begin(); /* I2C communication */
@@ -76,7 +77,7 @@ void loop() {
 	uint8_t data = 0;
 	int counter = 0;
 	int timer_status = 0;
-
+#if 0
 	while (1) {
 		if ((millis() - previousMillis) > CHECK_EVERY_MS){
 			previousMillis += CHECK_EVERY_MS;
@@ -108,14 +109,44 @@ void loop() {
 			
 			UpdateDisplayTone(&display, data); /* Update segment display */
 		}
+#endif
+		if (temp == 0) {
+				temp = 1;
+				Serial.print(F("temp = "));
+				Serial.println(temp);
+		}
+
+		if (temp == 1) {
+			start = millis();
+			temp = 2;
+			Serial.print(F("temp = "));
+			Serial.print(temp);
+			Serial.print(F(" | start = "));
+			Serial.println(start);
+		}
+		unsigned long now;
+		unsigned long timeout = 300000;
+		if (temp == 2) {
+			now = millis();
+		}
+		unsigned long elapsed = now - start;
+		Serial.print(F("elapsed = "));
+		Serial.println(elapsed);
+		if (elapsed >= timeout)
+		{
+			temp = 3;
+			Serial.println(F("5 minutes has occured."));
+			while (1) { ; }
+		}
 		if (timer_status) {
-			Serial.print("Timer Status:");
+			Serial.print(F("Timer Status:"));
 			Serial.println(timer_status);
 			Serial.println((millis()));
 			if (dtmf_timer.check()) {
-				BufferReset(&tone_buff);
+				//BufferReset(&tone_buff);
+				Serial.println(F("Timeout1: Resetting..."));
 				dtmf_timer.clear_flg();
 			}
 		}
-	}
+	//}
 }
