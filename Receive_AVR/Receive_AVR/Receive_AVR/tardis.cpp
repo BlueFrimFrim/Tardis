@@ -103,6 +103,16 @@ ExecuteCommand(uint64_t command)
 {
 	switch (command) {
 	case 111234:
+		Wire.beginTransmission(7);
+		Wire.write(0x02);
+		Wire.endTransmission();
+		delay(100);
+		break;
+	case 112468:
+		Wire.beginTransmission(7);
+		Wire.write(0x03);
+		Wire.endTransmission();
+		delay(100);
 		break;
 	default:
 		Wire.beginTransmission(7);
