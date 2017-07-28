@@ -11,44 +11,36 @@
 #define CHECK_EVERY_MS 10
 #define MIN_STABLE_VALS 1
 
-t_buffer tone_buff;
-uint8_t tone_data[TONE_SIZE];
-
+volatile t_buffer tone_buff;
+volatile t_mt8880c mt8880c_rx;
 volatile t_sysflgs sysflgs;
 
-t_mt8880c mt8880c_rx;
-
-volatile int g_last_irq, g_current_irq = 0;
+volatile uint8_t tone_data[TONE_SIZE];
+volatile unsigned long g_last_irq, g_current_irq = 0;
 
 unsigned long five_minutes = 5 * 1000;
 
 Adafruit_AlphaNum4 display = Adafruit_AlphaNum4();
+
 Timeout_t dtmf_timer = Timeout_t(five_minutes);
 
-unsigned long previousMillis;
-char stableVals;
+volatile unsigned long irq_time = 0;
 
-int temp2 = 0;
-int temp = 0;
-unsigned long g_timeout_now;
-unsigned long timeout_10s = 10000; 
-
-uint8_t data = 0;
-int counter = 0;
-int timer_status = 0;
+const unsigned long timeout_10s = 10000; 
 
 /*----------------------------------------------*/
 /*----------------------------------------------*/
 /* INTERRUPT: Tone received */
 void
 IRQ_ToneReceived(void)
-{		
-	g_current_irq = millis();
-	if (g_current_irq - g_last_irq > 100) {
+{	
+	unsigned long time_now = millis();	
+
+	if (time_now - irq_time > 100) {
 		if (ReadIrqBit(&mt8880c_rx)) {
 			sysflgs.irq_flg = 1;
 			dtmf_timer.set_timeout();
-			g_last_irq = g_current_irq;
+			irq_time = time_now;
 		}
 	}
 }
@@ -76,6 +68,9 @@ void setup() {
 
 // the loop function runs over and over again until power down or reset
 void loop() {
+	uint8_t data = 0;
+	int counter = 0;
+
 #if 1
 	if (counter == 99) { counter = 0; }
 	UpdateDisplayCounter(&display, counter++);

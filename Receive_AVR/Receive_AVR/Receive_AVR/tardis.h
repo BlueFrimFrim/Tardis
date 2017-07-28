@@ -46,7 +46,7 @@ const uint8_t g_seg3[13] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '
 /* Type definitions */
 typedef struct
 {
-    volatile uint8_t irq_flg;
+    uint8_t irq_flg;
 }t_sysflgs;
 
 /*----------------------------------------------*/

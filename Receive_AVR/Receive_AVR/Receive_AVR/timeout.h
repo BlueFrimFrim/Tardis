@@ -1,6 +1,6 @@
 #include "Arduino.h"
 
-class Timeout_t{
+volatile class Timeout_t{
 
     unsigned long gstart;
     unsigned long gtime;
