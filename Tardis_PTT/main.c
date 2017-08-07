@@ -46,11 +46,13 @@ int main(void)
   {
 	  if(DIGITAL_IO_GetInput(&PTT_IN)){
 		  DIGITAL_IO_SetOutputHigh(&LED2);
+		  DIGITAL_IO_SetOutputHigh(&PTT_OUT);
 		  delay(0xFF);
 		  if(!DIGITAL_IO_GetInput(&PTT_IN)){SYSTIMER_Start();}
 	  }
 	  else{
 		  DIGITAL_IO_SetOutputLow(&LED2);
+		  DIGITAL_IO_SetOutputLow(&PTT_OUT);
 	  }
   }
 }

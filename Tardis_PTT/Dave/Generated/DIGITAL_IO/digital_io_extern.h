@@ -71,6 +71,8 @@ extern const DIGITAL_IO_t LED1;
 	
 extern const DIGITAL_IO_t PTT_IN; 
 	
+extern const DIGITAL_IO_t PTT_OUT; 
+	
  
 #endif  /* DIGITAL_IO_EXTERN_H */
 

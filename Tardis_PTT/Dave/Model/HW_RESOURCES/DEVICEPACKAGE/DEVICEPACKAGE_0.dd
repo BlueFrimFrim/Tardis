@@ -12,6 +12,7 @@
     <resourcesList name="pin" requiredResourceUri="http://resources/VQFN24.0.0/devicepackage/0/pin12"/>
   </provided>
   <provided xsi:type="ResourceModel:ResourceGroup" name="17" URI="http://resources/vqfn24.0.0/devicepackage/0/17">
+    <upwardMapList xsi:type="ResourceModel:HWResource" href="../../APPS/DIGITAL_IO/v4_0_16/DIGITAL_IO_3.app#//@hwResources.1"/>
     <resourcesList name="pin" requiredResourceUri="http://resources/VQFN24.0.0/devicepackage/0/pin17"/>
   </provided>
   <provided xsi:type="ResourceModel:ResourceGroup" name="16" URI="http://resources/vqfn24.0.0/devicepackage/0/16">
