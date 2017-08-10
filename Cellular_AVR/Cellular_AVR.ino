@@ -115,6 +115,12 @@ void loop(void)
 void receive_event(int howMany)
 {
   uint8_t data = Wire.read();
+  Serial.println("Event...");
+  switch(data){
+    case:
+    
+    default;
+  }
 }
 
 #if 0
