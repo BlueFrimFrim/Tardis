@@ -11,14 +11,14 @@ typedef struct
 	uint16_t wr_ptr;
 	uint16_t rd_ptr;
 	uint16_t buff_size;
-	uint8_t *data;
+	volatile uint8_t *data;
 
 	uint64_t command;
 } t_buffer;
 
 /*----------------------------------------------*/
 /* Function declarations */
-extern void BufferInit(t_buffer *buffer, uint8_t *data, uint16_t size);
+extern void BufferInit(t_buffer *buffer, volatile uint8_t *data, uint16_t size);
 extern void BufferReset(t_buffer *buffer);
 extern uint16_t BufferLength(t_buffer *buffer);
 extern void BufferWrite(t_buffer *buffer, uint8_t data);

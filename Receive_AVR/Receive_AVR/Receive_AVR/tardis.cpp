@@ -38,7 +38,7 @@ UpdateDisplayCounter(Adafruit_AlphaNum4 *display, uint8_t increment)
 }
 
 void
-UpdateDisplayTone(Adafruit_AlphaNum4 *display, uint8_t tone)
+UpdateDisplayTone(Adafruit_AlphaNum4 *display, volatile uint8_t tone)
 {
 	uint8_t s3;
 
@@ -84,7 +84,7 @@ MT8880C_RX_Init(t_mt8880c *mt8880c_rx)
 	mt8880c_rx->rw = 8;
 	mt8880c_rx->not_cs = 9;
 }
-
+#if 0
 void
 ProcessTone(t_buffer *buffer)
 {
@@ -102,7 +102,7 @@ void
 ExecuteCommand(uint64_t command)
 {
 	switch (command) {
-	case 111234:
+	case 11123:
 		Wire.beginTransmission(7);
 		Wire.write(0x02);
 		Wire.endTransmission();
@@ -122,7 +122,7 @@ ExecuteCommand(uint64_t command)
 		break;
 	}
 }
-
+#endif
 /*
 * concatenate(unsigned x, unsigned y)
 *

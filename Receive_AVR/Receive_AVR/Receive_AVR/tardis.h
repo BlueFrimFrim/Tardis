@@ -54,12 +54,12 @@ typedef struct
 extern void WriteDisplay(Adafruit_AlphaNum4 *display);
 extern void SetupDisplay(Adafruit_AlphaNum4 *display);
 extern void UpdateDisplayCounter(Adafruit_AlphaNum4 *display, uint8_t increment);
-extern void UpdateDisplayTone(Adafruit_AlphaNum4 *display, uint8_t tone);
+extern void UpdateDisplayTone(Adafruit_AlphaNum4 *display, volatile uint8_t tone);
 
 extern int TimeoutMilliseconds(unsigned long start, unsigned long timeout_ms);
 extern void InitializeDTMF(t_mt8880c *mt8880c);
 extern void MT8880C_RX_Init(t_mt8880c *mt8880c_rx);
-extern void ProcessTone(t_buffer *buffer);
+//extern void ProcessTone(uint8_t data);
 extern void ExecuteCommand(uint64_t command);
 extern unsigned Concatenate(unsigned x, unsigned y);
 

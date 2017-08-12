@@ -25,7 +25,7 @@ unsigned concatenate(unsigned x, unsigned y);
 int interrupt = 0;
 int interrupt2 = 0;
 
-byte tone_test[] = {star, hash, one, two, three, four, five, six, seven, hash};
+byte tone_test[] = {star, one, two, three, hash};
 byte tone_clear[] = {0};
 
 char train_code = 0;

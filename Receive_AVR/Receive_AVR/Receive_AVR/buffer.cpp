@@ -1,7 +1,7 @@
 #include "buffer.h"
 
 void
-BufferInit(t_buffer *buffer, uint8_t *data, uint16_t size)
+BufferInit(t_buffer *buffer, volatile uint8_t *data, uint16_t size)
 {
 	buffer->len = 0;
 	buffer->rd_ptr = 0;

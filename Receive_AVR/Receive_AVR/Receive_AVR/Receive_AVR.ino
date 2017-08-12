@@ -11,8 +11,8 @@
 #define CHECK_EVERY_MS 10
 #define MIN_STABLE_VALS 1
 
-volatile t_buffer tone_buff;
-volatile t_mt8880c mt8880c_rx;
+t_buffer tone_buff;
+t_mt8880c mt8880c_rx;
 volatile t_sysflgs sysflgs;
 
 volatile uint8_t tone_data[TONE_SIZE];
@@ -27,6 +27,8 @@ Timeout_t dtmf_timer = Timeout_t(five_minutes);
 volatile unsigned long irq_time = 0;
 
 const unsigned long timeout_10s = 10000; 
+
+volatile uint64_t Command = 0;
 
 /*----------------------------------------------*/
 /*----------------------------------------------*/
@@ -73,19 +75,25 @@ void loop() {
 
 #if 1
 	if (counter == 99) { counter = 0; }
-	UpdateDisplayCounter(&display, counter++);
 
+	UpdateDisplayCounter(&display, counter++);
+#if 0
 	if (dtmf_timer.status()) {
 		if (dtmf_timer.check()) {
 			BufferReset(&tone_buff);
 			dtmf_timer.clear_timeout();
 		}
 	}
-
+#endif
 	if (sysflgs.irq_flg) {
 		sysflgs.irq_flg = 0;
 		data = ReadReceiveRegister(&mt8880c_rx); /* Read the tone which triggered interrupt. */
-		BufferWrite(&tone_buff, data);
+		Serial.print("data: ");
+		Serial.println(data);
+//		BufferWrite(&tone_buff, data);
+//		Serial.print("Buffer: ");
+//		Serial.println(BufferRead(&tone_buff));
+		ProcessTone(data);
 		UpdateDisplayTone(&display, data); /* Update segment display */
 		ReadStatusRegister(&mt8880c_rx); /* Clear interrupt register. */		
 		dtmf_timer.clear_timeout();
@@ -133,4 +141,46 @@ void loop() {
 			}
 		}
 #endif
+}
+
+void
+ProcessTone(uint8_t data)
+{
+	uint8_t tone_in = data;
+	//tone_in = BufferRead(buffer); /* Read tone received. */
+	//Serial.print("tone_in: ");
+	//Serial.println(tone_in);
+	
+	if (tone_in == g_hash) {
+		if (Command == g_star) { return; }
+		else { ExecuteCommand(Command); }
+	}
+	if (tone_in == g_star) { Command = tone_in; }
+	else { Command = Concatenate(Command, tone_in); }
+}
+
+void
+ExecuteCommand(uint64_t command)
+{
+	switch (command) {
+	case 11123:
+		Serial.println("command 1123 sending...");
+		Wire.beginTransmission(7);
+		Wire.write(0x02);
+		Wire.endTransmission();
+		delay(100);
+		break;
+	case 112468:
+		Wire.beginTransmission(7);
+		Wire.write(0x03);
+		Wire.endTransmission();
+		delay(100);
+		break;
+	default:
+		Wire.beginTransmission(7);
+		Wire.write(0x01);
+		Wire.endTransmission();
+		delay(100);
+		break;
+	}
 }

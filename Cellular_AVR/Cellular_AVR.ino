@@ -37,7 +37,7 @@ the commented section below at the end of the setup() function.
 #define FONA_TX 3
 #define FONA_RST 4
 
-#define DBG_MSG 0
+#define DBG_MSG 1
 
 // this is a large buffer for replies
 char replybuffer[255];
@@ -67,7 +67,7 @@ uint8_t type;
 void setup() {
 #if DBG_MSG
   while (!Serial);
-  Serial.begin(115200);  
+  Serial.begin(9600);  
   Serial.println(F("Tardis basic test"));
   Serial.println(F("Initializing...."));
 #endif
@@ -77,7 +77,7 @@ void setup() {
 #if DBG_MSG
     Serial.println(F("Couldn't find FONA"));
 #endif
-    while (1);
+    //while (1);
   }
   type = fona.type();
   
@@ -101,8 +101,9 @@ void setup() {
 #endif
   }
 #if DBG_MSG
-  printMenu();
+//  printMenu();
 #endif
+  Serial.println("I2C...begin");
   Wire.begin(7);
   Wire.onReceive(receive_event);
 }
@@ -114,16 +115,22 @@ void loop(void)
 
 void receive_event(int howMany)
 {
-  uint8_t data = Wire.read();
-  Serial.println("Event...");
+  uint64_t data = Wire.read();
+#if DBG_MSG
+  Serial.print("Event...");
+#endif
   switch(data){
-    case:
-    
-    default;
+    case 0x02:
+#if DBG_MSG
+      Serial.println("*123");
+#endif
+      break;
+    default:
+      break;
   }
 }
 
-#if 0
+#if DBG_MSG
 void printMenu(void) {
   Serial.println(F("-------------------------------------"));
   Serial.println(F("[?] Print this menu"));
@@ -179,7 +186,7 @@ void print_diagnostic_menu(void)
   Serial.println(F("-------------------------------------"));
   Serial.println(F(""));
 }
-
+#if 0
 void loop() {
   Serial.print(F("FONA> "));
   while (! Serial.available() ) {
@@ -712,7 +719,7 @@ void loop() {
   }
 
 }
-
+#endif /* second loop() */
 void flushSerial() {
   while (Serial.available())
     Serial.read();
