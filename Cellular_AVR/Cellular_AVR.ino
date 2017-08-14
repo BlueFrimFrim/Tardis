@@ -39,6 +39,8 @@ the commented section below at the end of the setup() function.
 
 #define DBG_MSG 1
 
+char keegan[] = "4032002497";
+
 // this is a large buffer for replies
 char replybuffer[255];
 
@@ -56,9 +58,9 @@ SoftwareSerial *tardisSerial = &tardisSS;
 //  HardwareSerial *fonaSerial = &Serial1;
 
 // Use this for FONA 800 and 808s
-Adafruit_FONA fona = Adafruit_FONA(FONA_RST);
+//Adafruit_FONA fona = Adafruit_FONA(FONA_RST);
 // Use this one for FONA 3G
-//Adafruit_FONA_3G fona = Adafruit_FONA_3G(FONA_RST);
+Adafruit_FONA_3G fona = Adafruit_FONA_3G(FONA_RST);
 
 uint8_t readline(char *buff, uint8_t maxbuff, uint16_t timeout = 0);
 
@@ -77,7 +79,7 @@ void setup() {
 #if DBG_MSG
     Serial.println(F("Couldn't find FONA"));
 #endif
-    //while (1);
+    while (1);
   }
   type = fona.type();
   
@@ -90,8 +92,9 @@ void setup() {
 
   fona.println("ATZ");
   fona.setVolume(100);
-  fona.println("AT+CSDVC=3,1");  /* Auto answer */
-
+  fona.println("AT+CSDVC=3,1");  
+  /* Auto answer */
+  fona.println("ATS0=003");
   char imei[15] = {0}; // MUST use a 16 character buffer for IMEI!
   uint8_t imeiLen = fona.getIMEI(imei);
   
@@ -115,9 +118,10 @@ void loop(void)
 
 void receive_event(int howMany)
 {
-  uint64_t data = Wire.read();
+  uint8_t data = Wire.read();
 #if DBG_MSG
   Serial.print("Event...");
+  Serial.println(data);
 #endif
   switch(data){
     case 0x02:
@@ -125,6 +129,14 @@ void receive_event(int howMany)
       Serial.println("*123");
 #endif
       break;
+    case 25:
+            Serial.println(F("Calling Keegan."));
+        if (!fona.callPhone(keegan)) {
+          Serial.println(F("Failed"));
+        } else {
+          Serial.println(F("Sent!"));
+        }
+      break;  
     default:
       break;
   }

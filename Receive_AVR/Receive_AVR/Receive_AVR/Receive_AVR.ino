@@ -64,7 +64,7 @@ void setup() {
 	Wire.begin(); /* I2C communication */
 	while (!Serial);
 	Serial.println("Tardis Initialized.");
-	SetupDisplay(&display);
+//	SetupDisplay(&display);
 	ReadStatusRegister(&mt8880c_rx);
 }
 
@@ -74,9 +74,9 @@ void loop() {
 	int counter = 0;
 
 #if 1
-	if (counter == 99) { counter = 0; }
+//	if (counter == 99) { counter = 0; }
 
-	UpdateDisplayCounter(&display, counter++);
+//	UpdateDisplayCounter(&display, counter++);
 #if 0
 	if (dtmf_timer.status()) {
 		if (dtmf_timer.check()) {
@@ -94,7 +94,7 @@ void loop() {
 //		Serial.print("Buffer: ");
 //		Serial.println(BufferRead(&tone_buff));
 		ProcessTone(data);
-		UpdateDisplayTone(&display, data); /* Update segment display */
+//		UpdateDisplayTone(&display, data); /* Update segment display */
 		ReadStatusRegister(&mt8880c_rx); /* Clear interrupt register. */		
 		dtmf_timer.clear_timeout();
 		Serial.println(F("Interrupt"));
@@ -170,13 +170,15 @@ ExecuteCommand(uint64_t command)
 		Wire.endTransmission();
 		delay(100);
 		break;
-	case 112468:
+	case 11246:
+		Serial.println("command 11246 sending...");
 		Wire.beginTransmission(7);
-		Wire.write(0x03);
+		Wire.write(25);
 		Wire.endTransmission();
 		delay(100);
 		break;
 	default:
+		Serial.println("command default sending...");
 		Wire.beginTransmission(7);
 		Wire.write(0x01);
 		Wire.endTransmission();
