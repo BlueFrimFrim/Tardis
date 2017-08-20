@@ -5,14 +5,17 @@
 */
 
 
-#include "tardis.h"
+//#include "tardis.h"
+#include <Wire.h>
 
+#define READ 1
+#define WRITE 0
 
 volatile unsigned long g_last_irq, g_current_irq = 0;
 
 unsigned long five_minutes = 5 * 1000;
 
-Timeout_t dtmf_timer = Timeout_t(five_minutes);
+//Timeout_t dtmf_timer = Timeout_t(five_minutes);
 
 volatile unsigned long irq_time = 0;
 
@@ -30,8 +33,7 @@ const uint8_t rs0 = 7;
 const uint8_t rw = 8;
 const uint8_t not_cs = 9;
 
-void
-IRQ_ToneReceived(void)
+void IRQ_ToneReceived(void)
 {	
 	unsigned long time_now = millis();	
 
@@ -44,26 +46,26 @@ IRQ_ToneReceived(void)
 
 
 void setup() {
-	BusMode(mt8880c, WRITE);
-	pinMode(mt8880c->not_irq, INPUT);
-	pinMode(mt8880c->rs0, OUTPUT);
-	pinMode(mt8880c->not_cs, OUTPUT);
-	pinMode(mt8880c->rw, OUTPUT);
-	Reset(mt8880c);	InitializeDTMF(&mt8880c_rx);
+	BusMode(WRITE);
+	pinMode(not_irq, INPUT);
+	pinMode(rs0, OUTPUT);
+	pinMode(not_cs, OUTPUT);
+	pinMode(rw, OUTPUT);
+	Reset();
 	delay(100);
 
-	attachInterrupt(digitalPinToInterrupt(mt8880c_rx.not_irq), IRQ_ToneReceived, CHANGE);
+	attachInterrupt(digitalPinToInterrupt(not_irq), IRQ_ToneReceived, CHANGE);
 
 	Serial.begin(9600); /* Serial communication */
 	Wire.begin(); /* I2C communication */
 	while (!Serial);
-	Serial.println("Tardis Initialized.");
+	Serial.println("TARDIS.LOADING SYSTEM");
 	ReadStatusRegister();
 }
 
 void loop() {
 	uint8_t tone_in = 0;
-	int counter = 0;
+//	int counter = 0;
 
 #if 1
 
@@ -167,7 +169,7 @@ void ExecuteCommand(uint64_t cmd)
 		delay(100);
 		break;
 	case 11789:
-		Serial.println("\t.TRANSMITTING *789# -> Answering")
+		Serial.println("\t.TRANSMITTING *789# -> Answering");
 		Wire.beginTransmission(7);
 		Wire.write(0x10);
 		Wire.endTransmission();
@@ -276,9 +278,7 @@ void ExecuteCommand(uint64_t cmd)
  }
  
  uint8_t ReadReceiveRegister(void)
- {
-   uint8_t rx_tone = 0;
- 
+ { 
    BusMode(READ);
    digitalWrite(rw, HIGH);
    digitalWrite(rs0, LOW);
@@ -296,4 +296,11 @@ void ExecuteCommand(uint64_t cmd)
 		 delay(500);
 	 }
  }
- 
+
+ /*
+  * UTILITY
+  */
+unsigned Concatenate(unsigned x, unsigned y)
+{
+  return x * pow(10, (int)log10(y) + 1) + y;
+}

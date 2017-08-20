@@ -2,7 +2,7 @@
 
 #include "tardis.h"
 
-#define DBG_MSG 1
+#define DBG_MSG 0
 
 
 static const byte one = 1;
@@ -92,7 +92,7 @@ void loop(void)
   }
 #endif
 #if !DBG_MSG
-  if(digitalRead9)){
+  if(digitalRead(9)){
       PlayTone(tone_test, sizeof(tone_test));
   }
 #endif
