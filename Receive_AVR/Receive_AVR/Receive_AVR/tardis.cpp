@@ -1,50 +1,6 @@
+
+
 #include "tardis.h"
-
-/*----------------------------------------------*/
-/* 7-Segment display functions */
-void
-WriteDisplay(Adafruit_AlphaNum4 *display)
-{
-	display->writeDisplay();
-}
-
-void
-SetupDisplay(Adafruit_AlphaNum4 *display)
-{
-	display->begin(0x70);
-	display->writeDigitAscii(0, '0');
-	display->writeDigitAscii(1, '0');
-	display->writeDigitAscii(2, 'R');
-	display->writeDigitAscii(3, 'X');
-	WriteDisplay(display);
-}
-
-void
-UpdateDisplayCounter(Adafruit_AlphaNum4 *display, uint8_t increment)
-{
-	uint8_t s0, s1;
-	if (increment > 9) {
-		s0 = increment / 10;
-		s1 = increment % 10;
-		display->writeDigitAscii(0, g_seg0[s0]);
-		display->writeDigitAscii(1, g_seg1[s1]);
-	}
-	else {
-		s1 = increment;
-		display->writeDigitAscii(0, '0');
-		display->writeDigitAscii(1, g_seg1[s1]);
-	}
-	WriteDisplay(display);
-}
-
-void
-UpdateDisplayTone(Adafruit_AlphaNum4 *display, volatile uint8_t tone)
-{
-	uint8_t s3;
-
-	s3 = tone;
-	display->writeDigitAscii(3, g_seg3[s3]);
-}
 
 /*----------------------------------------------*/
 /* DTMF processing functions */
