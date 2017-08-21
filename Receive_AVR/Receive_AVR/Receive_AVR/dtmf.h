@@ -10,30 +10,28 @@
 
 /*----------------------------------------------*/
 /* Type definitions */
-typedef struct
-{
-	byte d0;
-	byte d1;
-	byte d2;
-	byte d3;
-	byte not_irq;
-	byte rs0;
-	byte not_cs;
-	byte rw;
-} t_mt8880c;
+const uint8_t not_irq = 2;
+const uint8_t d0 = 3;
+const uint8_t d1 = 4;
+const uint8_t d2 = 5;
+const uint8_t d3 = 6;
+const uint8_t rs0 = 7;
+const uint8_t rw = 8;
+const uint8_t not_cs = 9;
 
+#if 0
 /*----------------------------------------------*/
 /* Function declarations */
-extern void Reset(t_mt8880c *mt8880c);
-extern void WriteControlRegister(t_mt8880c *mt8880c, byte value);
-extern void BusMode(t_mt8880c *mt8880c, byte mode);
-extern void WriteTransmitRegister(t_mt8880c *mt8880c, byte value);
-extern void BusWrite(t_mt8880c *mt8880c, byte value);
-extern void PlayTone(t_mt8880c *mt8880c, byte *value, int len);
-extern byte ReadIrqBit(t_mt8880c *mt8880c);
+extern void Reset(void);
+extern void WriteControlRegister(byte value);
+extern void BusMode(byte mode);
+extern void WriteTransmitRegister(byte value);
+extern void BusWrite(byte value);
+extern void PlayTone(byte *value, int len);
+//extern byte ReadIrqBit(void);
 
-extern byte BusRead(t_mt8880c *mt8880c);
-extern byte ReadStatusRegister(t_mt8880c *mt8880c);
-extern byte ReadReceiveRegister(t_mt8880c *mt8880c);
-
+extern byte BusRead(void);
+extern byte ReadStatusRegister(void);
+extern byte ReadReceiveRegister(void);
+#endif
 #endif /* DTMF_H */
