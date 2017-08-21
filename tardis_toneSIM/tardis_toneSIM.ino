@@ -19,6 +19,7 @@ static const byte star = 11;
 static const byte hash = 12;
 
 byte tone_test[] = {star, one, two, three, hash};
+byte tone_clear[] = {0};
 byte tone_sequence0[] = {star, one, two, three, hash};
 byte tone_sequence1[] = {star, four, five, six, hash};
 byte tone_sequence2[] = {star, seven, eight, nine, hash};
@@ -94,6 +95,7 @@ void loop(void)
 #if !DBG_MSG
   if(digitalRead(9)){
       PlayTone(tone_test, sizeof(tone_test));
+      PlayTone(tone_clear, sizeof(tone_clear));
   }
 #endif
 }

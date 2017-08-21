@@ -1,3 +1,8 @@
+#include <Adafruit_GFX.h>
+#include <gfxfont.h>
+
+#include <Adafruit_LEDBackpack.h>
+
 #include "tardis.h"
 
 /*----------------------------------------------*/

@@ -7,10 +7,10 @@
 #include "dtmf.h"
 
 
-const byte D0 = 10;
-const byte D1 = 8;
-const byte D2 = 11;
-const byte D3 = 7;
+const byte D0 = 7;
+const byte D1 = 11;
+const byte D2 = 8;
+const byte D3 = 10;
 const byte IRQ_NOT = 12;
 const byte RS0 = 6;
 const byte RW = 5;

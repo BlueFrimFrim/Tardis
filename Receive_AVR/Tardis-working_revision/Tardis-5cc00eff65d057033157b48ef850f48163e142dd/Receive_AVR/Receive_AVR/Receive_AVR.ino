@@ -36,8 +36,7 @@ unsigned long start;
 /*----------------------------------------------*/
 /*----------------------------------------------*/
 /* INTERRUPT: Tone received */
-void
-IRQ_ToneReceived(void)
+void IRQ_ToneReceived(void)
 {
 	//uint8_t data = 0;
 	g_current_irq = millis();
