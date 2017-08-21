@@ -4,7 +4,7 @@
 
 /*----------------------------------------------*/
 /* DTMF processing functions */
-
+#if 0
 int
 TimeoutMilliseconds(unsigned long start, unsigned long timeout_ms)
 {
@@ -15,32 +15,18 @@ TimeoutMilliseconds(unsigned long start, unsigned long timeout_ms)
 }
 
 void
-InitializeDTMF(t_mt8880c *mt8880c)
+InitializeDTMF(void)
 {
-  BusMode(mt8880c, WRITE);
-  pinMode(mt8880c->not_irq, INPUT);
-  pinMode(mt8880c->rs0, OUTPUT);
-  pinMode(mt8880c->not_cs, OUTPUT);
-  pinMode(mt8880c->rw, OUTPUT);
-  Reset(mt8880c);
+  BusMode(WRITE);
+  pinMode(not_irq, INPUT);
+  pinMode(rs0, OUTPUT);
+  pinMode(not_cs, OUTPUT);
+  pinMode(rw, OUTPUT);
+  Reset();
   return;
 }
 
-void
-MT8880C_RX_Init(t_mt8880c *mt8880c_rx)
-{
-	mt8880c_rx->not_irq = 2; /* Interrupt pin */
 
-	mt8880c_rx->d0 = 3;
-	mt8880c_rx->d1 = 4;
-	mt8880c_rx->d2 = 5;
-	mt8880c_rx->d3 = 6;
-
-	mt8880c_rx->rs0 = 7;
-	mt8880c_rx->rw = 8;
-	mt8880c_rx->not_cs = 9;
-}
-#if 0
 void
 ProcessTone(t_buffer *buffer)
 {
@@ -78,7 +64,7 @@ ExecuteCommand(uint64_t command)
 		break;
 	}
 }
-#endif
+
 /*
 * concatenate(unsigned x, unsigned y)
 *
@@ -92,3 +78,4 @@ Concatenate(unsigned x, unsigned y)
 {
 	return x * pow(10, (int)log10(y) + 1) + y;
 }
+#endif

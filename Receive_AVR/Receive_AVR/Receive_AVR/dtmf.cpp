@@ -1,5 +1,5 @@
 #include "dtmf.h"
-
+#if 0
 void Reset(void)
 {
 	delay(100);
@@ -102,3 +102,4 @@ void PlayTone(uint8_t *value, int len)
 		delay(500);
 	}
 }
+#endif

@@ -41,13 +41,14 @@ typedef struct
     uint8_t irq_flg;
 }t_sysflgs;
 
+#if 0
 /*----------------------------------------------*/
 /* Function declarations */
 extern int TimeoutMilliseconds(unsigned long start, unsigned long timeout_ms);
-extern void InitializeDTMF(t_mt8880c *mt8880c);
-extern void MT8880C_RX_Init(t_mt8880c *mt8880c_rx);
+extern void InitializeDTMF(void);
+extern void MT8880C_RX_Init(void);
 //extern void ProcessTone(uint8_t data);
 extern void ExecuteCommand(uint64_t command);
 extern unsigned Concatenate(unsigned x, unsigned y);
-
+#endif
 #endif /* TARDIS_H */
