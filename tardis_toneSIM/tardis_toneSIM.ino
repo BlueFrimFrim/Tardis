@@ -22,7 +22,7 @@ byte tone_test[] = {star, one, two, three, hash};
 byte tone_clear[] = {0};
 byte tone_sequence0[] = {star, one, two, three, hash};
 byte tone_sequence1[] = {star, four, five, six, hash};
-byte tone_sequence2[] = {star, seven, eight, nine, hash};
+byte tone_sequence2[] = {star, two, two, hash};
 byte tone_sequence3[] = {star, one, one, hash};
 
 
@@ -31,7 +31,7 @@ void PrintMenu(void)
   Serial.println("\t.PLEASE SELECT TONE");
   Serial.println("\t.[0] *123# -> Call Keegan");
   Serial.println("\t.[1] *456# -> Call Bruce");
-  Serial.println("\t.[2] *789# -> Answer");
+  Serial.println("\t.[2] *22# -> Answer");
   Serial.println("\t.[3] *11# -> Hang Up");
   Serial.println("\t.[h] PRINT MENU");
 }
@@ -94,7 +94,7 @@ void loop(void)
 #endif
 #if !DBG_MSG
   if(digitalRead(9)){
-      PlayTone(tone_test, sizeof(tone_test));
+      PlayTone(tone_sequence3, sizeof(tone_sequence3));
       PlayTone(tone_clear, sizeof(tone_clear));
   }
 #endif

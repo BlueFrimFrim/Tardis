@@ -7,6 +7,11 @@
 
 //#include "tardis.h"
 #include <Wire.h>
+#include <Adafruit_FONA.h>
+
+
+
+#define DBG_MSG 1
 
 #define READ 1
 #define WRITE 0
@@ -21,9 +26,9 @@ volatile unsigned long irq_time = 0;
 
 const unsigned long timeout_10s = 10000; 
 
-volatile uint64_t tx_cmd = 0;
-volatile uint8_t irq_event = 0;
 
+
+/* dtmf */
 const uint8_t not_irq = 2;
 const uint8_t d0 = 3;
 const uint8_t d1 = 4;
@@ -33,104 +38,111 @@ const uint8_t rs0 = 7;
 const uint8_t rw = 8;
 const uint8_t not_cs = 9;
 
+volatile uint64_t tx_cmd = 0;
+volatile uint8_t irq_event = 0;
+
+/* fona */
+#include <SoftwareSerial.h>
+
+
+const uint8_t FONA_RST = 11;
+const uint8_t FONA_RX = 12;
+const uint8_t FONA_TX = 13;
+
+char Cell_Keegan[] = "4032002497";
+char Cell_Bruce[] = "4038162797";
+
+uint8_t type;
+
+SoftwareSerial fonaSS = SoftwareSerial(FONA_TX, FONA_RX);
+SoftwareSerial *fonaSerial = &fonaSS;
+Adafruit_FONA_3G fona = Adafruit_FONA_3G(FONA_RST);
+
+
 void IRQ_ToneReceived(void)
 {	
-	unsigned long time_now = millis();	
-   Serial.println("IRQ Event");
+	unsigned long time_now = millis();
 
 	if (time_now - irq_time > 100) {
-		irq_event = 1;
-		//dtmf_timer.set_timeout();
 		irq_time = time_now;
+#if DBG_MSG  
+    Serial.println(F(".IRQ EVENT -> TRIGGERED"));
+#endif		
+    irq_event = 1;
 	}
 }
 
-
 void setup() {
-  BusMode(WRITE);
+#if DBG_MSG
+	while(!Serial);
+	Serial.begin(9600); /* Serial communication */
+	Serial.println(F("TARDIS.LOADING SYSTEM"));
+#endif	 
+
+	BusMode(WRITE);
 	pinMode(not_irq, INPUT);
 	pinMode(rs0, OUTPUT);
 	pinMode(not_cs, OUTPUT);
 	pinMode(rw, OUTPUT);
 	Reset();
-  
-  Serial.begin(9600); /* Serial communication */
-  
-	attachInterrupt(digitalPinToInterrupt(not_irq), IRQ_ToneReceived, CHANGE);
- 
+#if DBG_MSG
+	Serial.println(F("\t.MT8880C -> INITIALIZED"));
+#endif
 
-	Wire.begin(); /* I2C communication */
-	Serial.println("TARDIS.LOADING SYSTEM");
+	fonaSerial->begin(115200);
+  uint8_t flg = 1;
+  while(flg){
+  	if(fona.begin(*fonaSerial)){
+        flg = 0;
+  	} else{
+#if DBG_MSG
+      Serial.println(F("\t.FONA -> NOT FOUND. RESET SYSTEM"));
+#endif
+  	}
+  }
+	type = fona.type();
+#if DBG_MSG
+	Serial.println(F("\t.FONA -> FOUND FONA 3G (American)"));
+#endif
+	fona.sendCheckReply(F("ATZ"), F("OK"));
+	fona.setVolume(100);
+	fona.sendCheckReply(F("AT+CSDVC=3,1"), F("OK"));
+	fona.sendCheckReply(F("ATS0=003"), F("OK"));
+	char imei[15] = {0};
+	uint8_t imeiLen = fona.getIMEI(imei);
+	if(imeiLen > 0){
+#if DBG_MSG
+		Serial.print(F("Module IMEI: ")); 
+		Serial.println(imei);
+#endif
+	}
+
 	ReadStatusRegister();
+	delay(250);
+#if DBG_MSG
+	Serial.println(F("\t.SYSTEM LOADING COMPLETE"));
+#endif
+  pinMode(10, OUTPUT);    
+  digitalWrite(10, HIGH);
+	attachInterrupt(digitalPinToInterrupt(not_irq), IRQ_ToneReceived, CHANGE);
 }
 
 void loop() {
 	uint8_t tone_in = 0;
-//	int counter = 0;
-
-#if 1
-
-#if 0
-	if (dtmf_timer.status()) {
-		if (dtmf_timer.check()) {
-			BufferReset(&tone_buff);
-			dtmf_timer.clear_timeout();
-		}
-	}
-#endif
 	if (irq_event) {
+		noInterrupts();
 		irq_event = 0;
 		tone_in = ReadReceiveRegister();
-		Serial.print("tone_in: ");
+#if DBG_MSG
+		Serial.print(F("TARDIS.TONE RECEIVED -> "));
 		Serial.println(tone_in);
+#endif
 		ProcessTone(tone_in);
-		ReadStatusRegister(); /* Clear interrupt register. */		
-//		dtmf_timer.clear_timeout();
-		Serial.println(F("\t.IRQ EVENT -> TRIGGERED"));
+		ReadStatusRegister();
+		interrupts();
 	}
-#endif
-
-#if 0
-		if (temp == 0) {
-				temp = 1;
-				Serial.print(F("temp = "));
-				Serial.println(temp);
-		}
-
-		if (temp == 1) {
-			start = millis();
-			temp = 2;
-			Serial.print(F("temp = "));
-			Serial.print(temp);
-			Serial.print(F(" | start = "));
-			Serial.println(start);
-		}
-		unsigned long now;
-		unsigned long timeout = 300000;
-		if (temp == 2) {
-			now = millis();
-		}
-		unsigned long elapsed = now - start;
-		Serial.print(F("elapsed = "));
-		Serial.println(elapsed);
-		if (elapsed >= timeout)
-		{
-			temp = 3;
-			Serial.println(F("5 minutes has occured."));
-			while (1) { ; }
-		}
-		if (timer_status) {
-			Serial.print(F("Timer Status:"));
-			Serial.println(timer_status);
-			Serial.println((millis()));
-			if (dtmf_timer.check()) {
-				//BufferReset(&tone_buff);
-				Serial.println(F("Timeout1: Resetting..."));
-				dtmf_timer.clear_flg();
-			}
-		}
-#endif
 }
+
 
 void ProcessTone(uint8_t data)
 {
@@ -140,54 +152,56 @@ void ProcessTone(uint8_t data)
 	} else if(rx_tone == 11){
 		tx_cmd = rx_tone;
 		return;
-	} else if(tx_cmd == 12){
+	} else if(rx_tone == 12){
 		if(tx_cmd == 11){
 			return;
 		} else{
 			ExecuteCommand(tx_cmd);
-			return;
 		}
 	}
-	tx_cmd = Concatenate(tx_cmd, rx_tone);
+  tx_cmd = Concatenate(tx_cmd, rx_tone); 
 	return;
 }
 
 void ExecuteCommand(uint64_t cmd)
 {
 	switch (cmd) {
+    Serial.println(F("\t.EXECUTING COMMAND"));
 	case 11123:
-		Serial.println("\t.TRANSMITTING *123# -> Calling Keegan");
-		Wire.beginTransmission(7);
-		Wire.write(0x01);
-		Wire.endTransmission();
+		Serial.println(F("\t.TRANSMITTING *123# -> Calling Keegan"));
+		if(!fona.callPhone(Cell_Keegan)){
+			Serial.println(F("\t.CALL -> FAILED"));
+		} else{
+			Serial.println(F("\t.CALL -> SUCCESS"));
+		}
 		delay(100);
 		break;
-	case 11246:
-		Serial.println("\t.TRANSMITTING *456# -> Calling Bruce");
-		Wire.beginTransmission(7);
-		Wire.write(0x05);
-		Wire.endTransmission();
+	case 11456:
+		Serial.println(F("\t.TRANSMITTING *456# -> Calling Bruce"));
+		if(!fona.callPhone(Cell_Bruce)){
+			Serial.println(F("\t.CALL -> FAILED"));
+		} else{
+			Serial.println(F("\t.CALL -> SUCCESS"));
+		}
 		delay(100);
 		break;
-	case 11789:
-		Serial.println("\t.TRANSMITTING *789# -> Answering");
-		Wire.beginTransmission(7);
-		Wire.write(0x10);
-		Wire.endTransmission();
+	case 1122:
+		Serial.println(F("\t.TRANSMITTING *22# -> Answering"));
+        if (! fona.pickUp()) {
+			Serial.println(F("\t.CALL -> FAILED"));
+		  } else {
+			Serial.println(F("\t.CALL -> SUCCESS"));
+		  }
 		delay(100);
 		break;
 	case 1111:
-		Serial.println("\t.TRANSMITTING *11# -> Hanging Up");
-		Wire.beginTransmission(7);
-		Wire.write(0x15);
-		Wire.endTransmission();
+		Serial.println(F("\t.TRANSMITTING *11# -> Hanging Up"));
+    fona.sendCheckReply(F("AT+CVHU=0"), F("OK"));  
+    fona.sendCheckReply(F("ATH"), F("OK"));  
 		delay(100);
 		break;
 	default:
-		Serial.println("command default sending...");
-		Wire.beginTransmission(7);
-		Wire.write(0x00);
-		Wire.endTransmission();
+		Serial.println(F("\t.ERROR -> NOT A COMMAND"));
 		delay(100);
 		break;
 	}
