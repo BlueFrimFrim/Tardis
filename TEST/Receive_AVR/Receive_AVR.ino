@@ -58,12 +58,18 @@ SoftwareSerial fonaSS = SoftwareSerial(FONA_TX, FONA_RX);
 SoftwareSerial *fonaSerial = &fonaSS;
 Adafruit_FONA_3G fona = Adafruit_FONA_3G(FONA_RST);
 
+/* general */
+uint8_t enable_5s = 0;
+uint8_t enable_3m = 0;
+volatile unsigned long global_time = 0;
 
 void IRQ_ToneReceived(void)
 {	
 	unsigned long time_now = millis();
 
 	if (time_now - irq_time > 100) {
+    enable_5s = 1;
+    global_time = millis();
 		irq_time = time_now;
 #if DBG_MSG  
     Serial.println(F(".IRQ EVENT -> TRIGGERED"));
@@ -129,10 +135,14 @@ void setup() {
 
 void loop() {
 	uint8_t tone_in = 0;
+  
+  Timeout_5s(global_time);
 	if (irq_event) {
-		noInterrupts();
-		irq_event = 0;
-		tone_in = ReadReceiveRegister();
+   Serial.print(F("loop: enable_5s -> "));
+  Serial.println(enable_5s);
+  noInterrupts();
+    irq_event = 0;
+    tone_in = ReadReceiveRegister();
 #if DBG_MSG
 		Serial.print(F("TARDIS.TONE RECEIVED -> "));
 		Serial.println(tone_in);
@@ -157,6 +167,8 @@ void ProcessTone(uint8_t data)
 			return;
 		} else{
 			ExecuteCommand(tx_cmd);
+      enable_5s = 0;
+      tx_cmd = 0;
 		}
 	}
   tx_cmd = Concatenate(tx_cmd, rx_tone); 
@@ -169,35 +181,31 @@ void ExecuteCommand(uint64_t cmd)
     Serial.println(F("\t.EXECUTING COMMAND"));
 	case 11123:
 		Serial.println(F("\t.TRANSMITTING *123# -> Calling Keegan"));
-		if(!fona.callPhone(Cell_Keegan)){
-			Serial.println(F("\t.CALL -> FAILED"));
-		} else{
-			Serial.println(F("\t.CALL -> SUCCESS"));
-		}
+		fona.callPhone(Cell_Keegan);
+    enable_3m = 1;
 		delay(100);
 		break;
 	case 11456:
 		Serial.println(F("\t.TRANSMITTING *456# -> Calling Bruce"));
-		if(!fona.callPhone(Cell_Bruce)){
-			Serial.println(F("\t.CALL -> FAILED"));
-		} else{
-			Serial.println(F("\t.CALL -> SUCCESS"));
-		}
+		fona.callPhone(Cell_Bruce);
+    enable_3m = 1;
 		delay(100);
 		break;
 	case 1122:
 		Serial.println(F("\t.TRANSMITTING *22# -> Answering"));
-        if (! fona.pickUp()) {
-			Serial.println(F("\t.CALL -> FAILED"));
+        if (!fona.pickUp()) {
+			    Serial.println(F("\t.CALL -> FAILED"));
 		  } else {
-			Serial.println(F("\t.CALL -> SUCCESS"));
+          enable_3m = 1;
+			    Serial.println(F("\t.CALL -> SUCCESS"));
 		  }
 		delay(100);
 		break;
 	case 1111:
 		Serial.println(F("\t.TRANSMITTING *11# -> Hanging Up"));
     fona.sendCheckReply(F("AT+CVHU=0"), F("OK"));  
-    fona.sendCheckReply(F("ATH"), F("OK"));  
+    fona.sendCheckReply(F("ATH"), F("OK")); 
+    enable_3m = 0; 
 		delay(100);
 		break;
 	default:
@@ -322,3 +330,35 @@ unsigned Concatenate(unsigned x, unsigned y)
 {
   return x * pow(10, (int)log10(y) + 1) + y;
 }
+
+void Timeout_5s(unsigned long time_in)
+{
+  unsigned long time_now = millis();
+  unsigned long elapsed = time_now - time_in;
+  if(enable_5s){
+    if(elapsed > 5000){
+        Serial.println(F("5 seconds has passed"));
+        tx_cmd = 0;
+        enable_5s = 0;
+    }
+  }
+}
+
+void Timeout_3m(unsigned long time_in)
+{
+  unsigned long timeout = 3 * 1000 * 60;
+  unsigned long time_now = millis();
+  unsigned long elapsed = time_now - time_in;
+  if(enable_3m){
+    if(elapsed > timeout){
+      fona.sendCheckReply(F("AT+CVHU=0"), F("OK"));  
+      fona.sendCheckReply(F("ATH"), F("OK"));  
+      delay(100);
+    }
+  }
+}
+
+
+
+
+

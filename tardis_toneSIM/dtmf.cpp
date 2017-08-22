@@ -112,6 +112,6 @@ PlayTone(byte *value, int len)
 	WriteControlRegister(B0000);
 	for(int i = 0; i < len; i++){
 		WriteTransmitRegister(value[i]);
-		delay(500);
+		delay(20000);
 	}
 }
