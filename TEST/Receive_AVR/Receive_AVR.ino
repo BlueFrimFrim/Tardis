@@ -62,6 +62,8 @@ Adafruit_FONA_3G fona = Adafruit_FONA_3G(FONA_RST);
 uint8_t enable_5s = 0;
 uint8_t enable_3m = 0;
 volatile unsigned long global_time = 0;
+volatile unsigned long cell_time = 0;
+uint8_t i = 1;
 
 void IRQ_ToneReceived(void)
 {	
@@ -135,12 +137,10 @@ void setup() {
 
 void loop() {
 	uint8_t tone_in = 0;
-  
   Timeout_5s(global_time);
+  Timeout_30m(cell_time);
 	if (irq_event) {
-   Serial.print(F("loop: enable_5s -> "));
-  Serial.println(enable_5s);
-  noInterrupts();
+    noInterrupts();
     irq_event = 0;
     tone_in = ReadReceiveRegister();
 #if DBG_MSG
@@ -178,16 +178,17 @@ void ProcessTone(uint8_t data)
 void ExecuteCommand(uint64_t cmd)
 {
 	switch (cmd) {
-    Serial.println(F("\t.EXECUTING COMMAND"));
 	case 11123:
 		Serial.println(F("\t.TRANSMITTING *123# -> Calling Keegan"));
 		fona.callPhone(Cell_Keegan);
+    cell_time = millis();
     enable_3m = 1;
 		delay(100);
 		break;
 	case 11456:
 		Serial.println(F("\t.TRANSMITTING *456# -> Calling Bruce"));
 		fona.callPhone(Cell_Bruce);
+    cell_time = millis();
     enable_3m = 1;
 		delay(100);
 		break;
@@ -196,6 +197,7 @@ void ExecuteCommand(uint64_t cmd)
         if (!fona.pickUp()) {
 			    Serial.println(F("\t.CALL -> FAILED"));
 		  } else {
+          cell_time = millis();
           enable_3m = 1;
 			    Serial.println(F("\t.CALL -> SUCCESS"));
 		  }
@@ -344,15 +346,18 @@ void Timeout_5s(unsigned long time_in)
   }
 }
 
-void Timeout_3m(unsigned long time_in)
+void Timeout_30m(unsigned long time_in)
 {
-  unsigned long timeout = 3 * 1000 * 60;
   unsigned long time_now = millis();
   unsigned long elapsed = time_now - time_in;
+  Serial.println(elapsed);
   if(enable_3m){
-    if(elapsed > timeout){
+    if(elapsed > 1800000){
+      i = 0;
+      enable_3m = 0;
       fona.sendCheckReply(F("AT+CVHU=0"), F("OK"));  
       fona.sendCheckReply(F("ATH"), F("OK"));  
+      Serial.println(F("30m passed."));
       delay(100);
     }
   }
