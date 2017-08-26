@@ -350,7 +350,6 @@ void Timeout_30m(unsigned long time_in)
 {
   unsigned long time_now = millis();
   unsigned long elapsed = time_now - time_in;
-  Serial.println(elapsed);
   if(enable_3m){
     if(elapsed > 1800000){
       i = 0;
