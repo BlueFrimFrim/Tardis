@@ -8,6 +8,8 @@
 //#include "tardis.h"
 #include <Wire.h>
 #include <Adafruit_FONA.h>
+#include <SPI.h>
+#include <MCP23S17.h>
 
 
 
