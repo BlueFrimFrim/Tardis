@@ -86,9 +86,9 @@ void MCP::begin() {
   ::pinMode(_ss, OUTPUT);               // Set SlaveSelect pin as an output
   ::digitalWrite(_ss, HIGH);            // Set SlaveSelect HIGH (chip de-selected)
   SPI.begin();                          // Start up the SPI bus
-  //SPI.setClockDivider(CLOCK_DIVIDER); // Sets the SPI bus speed
-  //SPI.setBitOrder(MSBFIRST);          // Sets SPI bus bit order (this is the default, setting it for good form!)
-  //SPI.setDataMode(SPI_MODE0);         // Sets the SPI bus timing mode (this is the default, setting it for good form!)
+  SPI.setClockDivider(CLOCK_DIVIDER); // Sets the SPI bus speed
+  SPI.setBitOrder(MSBFIRST);          // Sets SPI bus bit order (this is the default, setting it for good form!)
+  SPI.setDataMode(SPI_MODE0);         // Sets the SPI bus timing mode (this is the default, setting it for good form!)
   byteWrite(IOCON, ADDR_ENABLE);
 }
 
