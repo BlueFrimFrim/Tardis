@@ -1,0 +1,352 @@
+EESchema Schematic File Version 2
+LIBS:Tardis-rescue
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:Tardis
+LIBS:Tardis-cache
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 6 8
+Title "T.A.R.D.I.S"
+Date "2017-12-04"
+Rev "3"
+Comp "Altcom"
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L mom_button S1
+U 1 1 5A1EF454
+P 3450 3800
+F 0 "S1" V 3250 4000 60  0000 C CNN
+F 1 "mom_button" H 3450 3750 60  0001 C CNN
+F 2 "" H 3450 3800 60  0001 C CNN
+F 3 "" H 3450 3800 60  0001 C CNN
+	1    3450 3800
+	0    1    1    0   
+$EndComp
+$Comp
+L R R25
+U 1 1 5A1EF45B
+P 3500 3200
+F 0 "R25" H 3625 3200 50  0000 C CNN
+F 1 "10k" V 3500 3200 50  0000 C CNN
+F 2 "" V 3430 3200 50  0001 C CNN
+F 3 "" H 3500 3200 50  0001 C CNN
+	1    3500 3200
+	-1   0    0    1   
+$EndComp
+$Comp
+L R R26
+U 1 1 5A1EF462
+P 3850 3375
+F 0 "R26" V 3750 3375 50  0000 C CNN
+F 1 "1k" V 3850 3375 50  0000 C CNN
+F 2 "" V 3780 3375 50  0001 C CNN
+F 3 "" H 3850 3375 50  0001 C CNN
+	1    3850 3375
+	0    1    1    0   
+$EndComp
+$Comp
+L mom_button S2
+U 1 1 5A1EF476
+P 4475 3775
+F 0 "S2" V 4275 3975 60  0000 C CNN
+F 1 "mom_button" H 4475 3725 60  0001 C CNN
+F 2 "" H 4475 3775 60  0001 C CNN
+F 3 "" H 4475 3775 60  0001 C CNN
+	1    4475 3775
+	0    1    1    0   
+$EndComp
+$Comp
+L R R27
+U 1 1 5A1EF47D
+P 4525 3200
+F 0 "R27" H 4650 3200 50  0000 C CNN
+F 1 "10k" V 4525 3200 50  0000 C CNN
+F 2 "" V 4455 3200 50  0001 C CNN
+F 3 "" H 4525 3200 50  0001 C CNN
+	1    4525 3200
+	-1   0    0    1   
+$EndComp
+$Comp
+L R R28
+U 1 1 5A1EF484
+P 4700 4100
+F 0 "R28" V 4600 4100 50  0000 C CNN
+F 1 "1k" V 4700 4100 50  0000 C CNN
+F 2 "" V 4630 4100 50  0001 C CNN
+F 3 "" H 4700 4100 50  0001 C CNN
+	1    4700 4100
+	0    1    1    0   
+$EndComp
+Text Notes 3425 3775 1    60   ~ 0
+Reset
+$Comp
+L mom_button S3
+U 1 1 5A1EF499
+P 5325 3775
+F 0 "S3" V 5125 3975 60  0000 C CNN
+F 1 "mom_button" H 5325 3725 60  0001 C CNN
+F 2 "" H 5325 3775 60  0001 C CNN
+F 3 "" H 5325 3775 60  0001 C CNN
+	1    5325 3775
+	0    1    1    0   
+$EndComp
+$Comp
+L R R29
+U 1 1 5A1EF4A0
+P 5375 3200
+F 0 "R29" H 5500 3200 50  0000 C CNN
+F 1 "10k" V 5375 3200 50  0000 C CNN
+F 2 "" V 5305 3200 50  0001 C CNN
+F 3 "" H 5375 3200 50  0001 C CNN
+	1    5375 3200
+	-1   0    0    1   
+$EndComp
+$Comp
+L R R30
+U 1 1 5A1EF4A7
+P 5550 4100
+F 0 "R30" V 5450 4100 50  0000 C CNN
+F 1 "1k" V 5550 4100 50  0000 C CNN
+F 2 "" V 5480 4100 50  0001 C CNN
+F 3 "" H 5550 4100 50  0001 C CNN
+	1    5550 4100
+	0    1    1    0   
+$EndComp
+$Comp
+L mom_button S4
+U 1 1 5A1EF4BB
+P 6175 3775
+F 0 "S4" V 5975 3975 60  0000 C CNN
+F 1 "mom_button" H 6175 3725 60  0001 C CNN
+F 2 "" H 6175 3775 60  0001 C CNN
+F 3 "" H 6175 3775 60  0001 C CNN
+	1    6175 3775
+	0    1    1    0   
+$EndComp
+$Comp
+L R R31
+U 1 1 5A1EF4C2
+P 6225 3200
+F 0 "R31" H 6350 3200 50  0000 C CNN
+F 1 "10k" V 6225 3200 50  0000 C CNN
+F 2 "" V 6155 3200 50  0001 C CNN
+F 3 "" H 6225 3200 50  0001 C CNN
+	1    6225 3200
+	-1   0    0    1   
+$EndComp
+$Comp
+L R R32
+U 1 1 5A1EF4C9
+P 6400 4100
+F 0 "R32" V 6300 4100 50  0000 C CNN
+F 1 "1k" V 6400 4100 50  0000 C CNN
+F 2 "" V 6330 4100 50  0001 C CNN
+F 3 "" H 6400 4100 50  0001 C CNN
+	1    6400 4100
+	0    1    1    0   
+$EndComp
+$Comp
+L mom_button S5
+U 1 1 5A1EF4DD
+P 7025 3775
+F 0 "S5" V 6825 3975 60  0000 C CNN
+F 1 "mom_button" H 7025 3725 60  0001 C CNN
+F 2 "" H 7025 3775 60  0001 C CNN
+F 3 "" H 7025 3775 60  0001 C CNN
+	1    7025 3775
+	0    1    1    0   
+$EndComp
+$Comp
+L R R33
+U 1 1 5A1EF4E4
+P 7075 3200
+F 0 "R33" H 7200 3200 50  0000 C CNN
+F 1 "10k" V 7075 3200 50  0000 C CNN
+F 2 "" V 7005 3200 50  0001 C CNN
+F 3 "" H 7075 3200 50  0001 C CNN
+	1    7075 3200
+	-1   0    0    1   
+$EndComp
+$Comp
+L R R34
+U 1 1 5A1EF4EB
+P 7250 4100
+F 0 "R34" V 7150 4100 50  0000 C CNN
+F 1 "1k" V 7250 4100 50  0000 C CNN
+F 2 "" V 7180 4100 50  0001 C CNN
+F 3 "" H 7250 4100 50  0001 C CNN
+	1    7250 4100
+	0    1    1    0   
+$EndComp
+Text HLabel 4025 3375 2    60   Output ~ 0
+RST
+Text HLabel 4875 4100 2    60   Output ~ 0
+BTN1
+Text HLabel 5725 4100 2    60   Output ~ 0
+BTN2
+Text HLabel 6575 4100 2    60   Output ~ 0
+BTN3
+Text HLabel 7425 4100 2    60   Output ~ 0
+BTN4
+Text HLabel 1275 3025 0    60   Input ~ 0
+GND
+$Comp
+L GND-RESCUE-Tardis #PWR063
+U 1 1 5A341B2F
+P 1425 3050
+AR Path="/5A341B2F" Ref="#PWR063"  Part="1" 
+AR Path="/5A1EEEAC/5A341B2F" Ref="#PWR065"  Part="1" 
+F 0 "#PWR065" H 1425 2800 50  0001 C CNN
+F 1 "GND" H 1425 2900 50  0001 C CNN
+F 2 "" H 1425 3050 50  0001 C CNN
+F 3 "" H 1425 3050 50  0001 C CNN
+	1    1425 3050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1275 3025 1425 3025
+Wire Wire Line
+	1425 3025 1425 3050
+$Comp
+L +5V #PWR066
+U 1 1 5A341B37
+P 1425 2900
+F 0 "#PWR066" H 1425 2750 50  0001 C CNN
+F 1 "+5V" H 1425 3040 50  0000 C CNN
+F 2 "" H 1425 2900 50  0001 C CNN
+F 3 "" H 1425 2900 50  0001 C CNN
+	1    1425 2900
+	1    0    0    -1  
+$EndComp
+Text HLabel 1275 2925 0    60   Input ~ 0
+5V
+Wire Wire Line
+	1275 2925 1425 2925
+Wire Wire Line
+	1425 2925 1425 2900
+Wire Wire Line
+	4025 3375 4000 3375
+Wire Wire Line
+	3500 4100 3500 4100
+Wire Wire Line
+	3500 4100 3500 4200
+Wire Wire Line
+	3500 3350 3500 3400
+$Comp
+L +5V #PWR067
+U 1 1 5A342622
+P 5375 2950
+F 0 "#PWR067" H 5375 2800 50  0001 C CNN
+F 1 "+5V" H 5375 3090 50  0000 C CNN
+F 2 "" H 5375 2950 50  0001 C CNN
+F 3 "" H 5375 2950 50  0001 C CNN
+	1    5375 2950
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND-RESCUE-Tardis #PWR066
+U 1 1 5A34265A
+P 5375 4225
+AR Path="/5A34265A" Ref="#PWR066"  Part="1" 
+AR Path="/5A1EEEAC/5A34265A" Ref="#PWR068"  Part="1" 
+F 0 "#PWR068" H 5375 3975 50  0001 C CNN
+F 1 "GND" H 5375 4075 50  0001 C CNN
+F 2 "" H 5375 4225 50  0001 C CNN
+F 3 "" H 5375 4225 50  0001 C CNN
+	1    5375 4225
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4525 3350 4525 3375
+Wire Wire Line
+	4525 4075 4525 4200
+Wire Wire Line
+	4525 4100 4550 4100
+Wire Wire Line
+	4850 4100 4875 4100
+Wire Wire Line
+	5700 4100 5725 4100
+Wire Wire Line
+	5400 4100 5375 4100
+Wire Wire Line
+	5375 4075 5375 4225
+Wire Wire Line
+	6225 4075 6225 4200
+Wire Wire Line
+	6225 4100 6250 4100
+Wire Wire Line
+	6550 4100 6575 4100
+Wire Wire Line
+	6225 3375 6225 3350
+Wire Wire Line
+	7100 4100 7075 4100
+Wire Wire Line
+	7075 4200 7075 4075
+Wire Wire Line
+	7425 4100 7400 4100
+Wire Wire Line
+	7075 3375 7075 3350
+Wire Wire Line
+	3500 3050 3500 2975
+Wire Wire Line
+	3500 2975 7075 2975
+Wire Wire Line
+	7075 2975 7075 3050
+Wire Wire Line
+	6225 3050 6225 2975
+Connection ~ 6225 2975
+Wire Wire Line
+	5375 2950 5375 3050
+Connection ~ 5375 2975
+Wire Wire Line
+	4525 3050 4525 2975
+Connection ~ 4525 2975
+Wire Wire Line
+	3500 4200 7075 4200
+Connection ~ 7075 4100
+Connection ~ 5375 4200
+Connection ~ 5375 4100
+Connection ~ 4525 4200
+Connection ~ 4525 4100
+Connection ~ 6225 4200
+Connection ~ 6225 4100
+Wire Wire Line
+	5375 3350 5375 3375
+Wire Wire Line
+	3700 3375 3500 3375
+Connection ~ 3500 3375
+$EndSCHEMATC
