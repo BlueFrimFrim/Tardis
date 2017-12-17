@@ -1463,7 +1463,7 @@ Wire Wire Line
 Wire Wire Line
 	3250 2075 3250 2100
 Wire Wire Line
-	3125 900  3125 1400
+	3125 1400 3125 900 
 Connection ~ 3125 900 
 $Comp
 L +5V #PWR15
