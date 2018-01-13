@@ -298,11 +298,11 @@ $EndComp
 Wire Wire Line
 	4075 2200 4075 2250
 Text GLabel 4175 2225 3    60   Input ~ 0
-RXI
+RXI3
 Text GLabel 4275 2225 3    60   Input ~ 0
-TX0
+TX03
 Text GLabel 4400 2225 3    60   Input ~ 0
-DTR
+DTR3
 Wire Wire Line
 	4175 2200 4175 2225
 Wire Wire Line
@@ -343,7 +343,7 @@ F 3 "" H 7550 4075 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 Text GLabel 7725 4100 3    60   Input ~ 0
-DTR
+DTR3
 Wire Wire Line
 	7725 4100 7725 4075
 Wire Wire Line
@@ -463,11 +463,11 @@ Wire Wire Line
 	4575 3925 4875 3925
 Connection ~ 4875 3925
 Text GLabel 7050 4325 2    60   Input ~ 0
-TX0
+TX03
 Wire Wire Line
 	7050 4325 7025 4325
 Text GLabel 7050 4225 2    60   Input ~ 0
-RXI
+RXI3
 Wire Wire Line
 	7050 4225 7025 4225
 $EndSCHEMATC
