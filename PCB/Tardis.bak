@@ -796,11 +796,11 @@ Wire Wire Line
 	4875 1250 4800 1250
 Wire Wire Line
 	4800 1350 4875 1350
-Text GLabel 1725 2950 2    60   BiDi ~ 0
+Text GLabel 1725 3150 2    60   BiDi ~ 0
 Fona_Rx
 Text GLabel 1725 3050 2    60   BiDi ~ 0
 Fona_Tx
-Text GLabel 1725 3150 2    60   BiDi ~ 0
+Text GLabel 1725 2950 2    60   BiDi ~ 0
 Fona_RST
 Wire Wire Line
 	1500 2950 1725 2950
