@@ -1,0 +1,32 @@
+** Drc report for D:\Developer\Tardis\PCB\Tardis.kicad_pcb **
+** Created on  **
+
+** Found 0 DRC errors **
+
+** Found 8 unconnected pads **
+ErrType(2): Unconnected pads
+    @ (7.8987 in,2.0127 in): Pad 18 on F.Cu, Non-copper of U6 net +5V
+    @ (7.8672 in,2.3473 in): Pad 6 on F.Cu, Non-copper of U6
+ErrType(2): Unconnected pads
+    @ (9.4243 in,1.8473 in): Pad 4 on F.Cu, Non-copper of U5 net +5V
+    @ (9.4872 in,1.8473 in): Pad 6 on F.Cu, Non-copper of U5
+ErrType(2): Unconnected pads
+    @ (9.4872 in,1.8473 in): Pad 6 on F.Cu, Non-copper of U5 net +5V
+    @ (9.5187 in,1.5127 in): Pad 18 on F.Cu, Non-copper of U5
+ErrType(2): Unconnected pads
+    @ (7.8574 in,2.4100 in): Pad 2 on B.Cu, Non-copper of C27 net /GND
+    @ (7.8000 in,2.5600 in): Pad 2 on F.Cu, Non-copper of Y5
+ErrType(2): Unconnected pads
+    @ (9.4400 in,2.0200 in): Pad 2 on F.Cu, Non-copper of Y4 net /GND
+    @ (9.4557 in,1.8473 in): Pad 5 on F.Cu, Non-copper of U5
+ErrType(2): Unconnected pads
+    @ (9.4557 in,1.8473 in): Pad 5 on F.Cu, Non-copper of U5 net /GND
+    @ (9.3928 in,1.8473 in): Pad 3 on F.Cu, Non-copper of U5
+ErrType(2): Unconnected pads
+    @ (7.7728 in,2.3473 in): Pad 3 on F.Cu, Non-copper of U6 net /GND
+    @ (7.8357 in,2.3473 in): Pad 5 on F.Cu, Non-copper of U6
+ErrType(2): Unconnected pads
+    @ (8.0000 in,3.3400 in): Pad 3 on F.Cu, Non-copper of U7 net Net-(C14-Pad2)
+    @ (7.9233 in,3.2300 in): Pad 1 on B.Cu, Non-copper of R50
+
+** End of Report **
