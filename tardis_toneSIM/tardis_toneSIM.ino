@@ -1,9 +1,6 @@
-
-
 #include "tardis.h"
 
-#define DBG_MSG 0
-
+// #define DBG_MSG
 
 static const byte one = 1;
 static const byte two = 2;
@@ -25,6 +22,8 @@ byte tone_sequence1[] = {star, four, five, six, hash};
 byte tone_sequence2[] = {star, two, two, hash};
 byte tone_sequence3[] = {star, one, one, hash};
 
+MT8880C_T sim;
+int count = 0;
 
 void PrintMenu(void)
 {
@@ -38,66 +37,33 @@ void PrintMenu(void)
 
 void setup(void)
 {
-  Reset();
-	BusMode(WRITE);
-	pinMode(IRQ_NOT, INPUT);
-	pinMode(RS0, OUTPUT);
-	pinMode(CS_NOT, OUTPUT);
-	pinMode(RW, OUTPUT);
+  sim.D3 = 3;
+  sim.D2 = 4;
+  sim.D1 = 5;
+  sim.D0 = 6;
+  sim.nIRQ = 12;
+  sim.RS0 = 7;
+  sim.RW = 10;
+  sim.nCS = 11;
 
-  delay(500);
-
-#if DBG_MSG
-  Serial.begin(9600); /* Serial communication */
-  while (!Serial);
-  Serial.println("TARDIS.LOADING SYSTEM");
-#endif
+  sim.Reset();
+	pinMode(sim.nIRQ, INPUT);
+	pinMode(sim.RS0, OUTPUT);
+	pinMode(sim.nCS, OUTPUT);
+	pinMode(sim.RW, OUTPUT);
+  delay(100);
+  sim.ReadStatusRegister();
 }
 
 void loop(void)
 {
-#if DBG_MSG
-  while(!digitalRead(9)){;}
-  Serial.println("\t.SIMULATION ENABLED");
-  PrintMenu();
-  while(1){
-    char command = Serial.read();
-    switch(command){
-      case 'h':
-        PrintMenu();
-      break;
-      
-      case '0':
-        PlayTone(tone_sequence0, sizeof(tone_sequence0));
-        Serial.println("\t.TONE SEQUENCE 0 -> PLAY");
-      break;
-      
-      case '1':
-        PlayTone(tone_sequence1, sizeof(tone_sequence1));
-        Serial.println("\t.TONE SEQUENCE 1 -> PLAY");
-      break;
-      
-      case '2':
-        PlayTone(tone_sequence2, sizeof(tone_sequence2));
-        Serial.println("\t.TONE SEQUENCE 2 -> PLAY");
-      break;
-      
-      case '3':
-        PlayTone(tone_sequence3, sizeof(tone_sequence3));
-        Serial.println("\t.TONE SEQUENCE 3 -> PLAY");
-      break;
-
-      default:
-      break;
-    }
-  }
-#endif
-#if !DBG_MSG
   if(digitalRead(9)){
-      PlayTone(tone_test, sizeof(tone_test));
-      PlayTone(tone_clear, sizeof(tone_clear));
+    //sim.PlayTone(tone_test, sizeof(tone_test));
+    sim.PlayTone(tone_test, sizeof(tone_test), count);
+    count++;
+    if(count == 8){count = 0;}
+    //sim.PlayTone(tone_clear, sizeof(tone_clear));
   }
-#endif
 }
 
 

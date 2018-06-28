@@ -26,13 +26,13 @@ volatile uint64_t tx_cmd = 0;
 volatile uint8_t irq_event = 0;
 
 const uint8_t not_irq = 2;
-const uint8_t d0 = 3;
-const uint8_t d1 = 4;
-const uint8_t d2 = 5;
-const uint8_t d3 = 6;
-const uint8_t rs0 = 7;
-const uint8_t rw = 8;
-const uint8_t not_cs = 9;
+const uint8_t d0 = 6; //3
+const uint8_t d1 = 5; //4
+const uint8_t d2 = 4; //5
+const uint8_t d3 = 3; //6
+const uint8_t rs0 = 9;
+const uint8_t rw = 11;
+const uint8_t not_cs = 10;
 
 void IRQ_ToneReceived(void)
 {	
