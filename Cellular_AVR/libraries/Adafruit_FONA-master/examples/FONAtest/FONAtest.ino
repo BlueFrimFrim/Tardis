@@ -45,9 +45,9 @@ SoftwareSerial *fonaSerial = &fonaSS;
 //  HardwareSerial *fonaSerial = &Serial1;
 
 // Use this for FONA 800 and 808s
-Adafruit_FONA fona = Adafruit_FONA(FONA_RST);
+//Adafruit_FONA fona = Adafruit_FONA(FONA_RST);
 // Use this one for FONA 3G
-//Adafruit_FONA_3G fona = Adafruit_FONA_3G(FONA_RST);
+Adafruit_FONA_3G fona = Adafruit_FONA_3G(FONA_RST);
 
 uint8_t readline(char *buff, uint8_t maxbuff, uint16_t timeout = 0);
 
@@ -60,7 +60,7 @@ void setup() {
   Serial.println(F("FONA basic test"));
   Serial.println(F("Initializing....(May take 3 seconds)"));
 
-  fonaSerial->begin(4800);
+  fonaSerial->begin(115200);
   if (! fona.begin(*fonaSerial)) {
     Serial.println(F("Couldn't find FONA"));
     while (1);
@@ -431,11 +431,11 @@ void loop() {
         // call a phone!
         char number[30];
         flushSerial();
-        Serial.print(F("Call #"));
-        readline(number, 30);
-        Serial.println();
-        Serial.print(F("Calling ")); Serial.println(number);
-        if (!fona.callPhone(number)) {
+        //Serial.print(F("Call #"));
+        //readline(number, 30);
+        //Serial.println();
+        Serial.print(F("Calling 4032002497")); Serial.println(number);
+        if (!fona.callPhone("4032002497")) {
           Serial.println(F("Failed"));
         } else {
           Serial.println(F("Sent!"));
