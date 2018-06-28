@@ -37,6 +37,15 @@ the commented section below at the end of the setup() function.
 #define FONA_TX 3
 #define FONA_RST 4
 
+#define BT1 5
+#define BT2 6
+#define BT3 7
+#define BT4 8
+#define LD1 9
+#define LD2 10
+#define LD3 11
+#define LD4 12
+
 #define DBG_MSG 1
 
 char keegan[] = "4032002497";
@@ -114,6 +123,11 @@ void setup() {
 void loop(void)
 {
   delay(100);
+  if(BT1){;}
+  else if(BT2){;}
+  else if(BT3){;}
+  else if(BT4){;}
+
 }
 
 void receive_event(int howMany)
